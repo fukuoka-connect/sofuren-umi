@@ -34,24 +34,25 @@
 
   <style>
     :root {
-      /* ── 白・クリーム系パレット ── */
-      --cream:      #FEFCF8;   /* ページベース */
-      --warm-white: #FFFFFF;   /* カード背景 */
-      --sand:       #F5F0E8;   /* セクション背景 */
-      --tan:        #EAE2D6;   /* ボーダー・薄区切り */
-      --brown-lt:   #C8A882;   /* 装飾・アクセント薄 */
-      --brown:      #A07850;   /* テキスト中間 */
-      --brown-deep: #7A5835;   /* 見出し・濃いテキスト */
-      --ink:        #3A2A1A;   /* 本文テキスト */
-      --red:        #C0392B;   /* アクションボタン（維持） */
-      --red-lt:     #D9534F;   /* アクセント赤 */
-      --red-pale:   #FDF1F0;   /* 赤の薄背景 */
-      --char:       #F5F0E8;   /* ★旧ダーク→明るいクリーム */
-      --smoke:      #EAE2D6;   /* ★旧ダーク→明るいサンド */
-      --text-mid:   #6B5040;   /* 本文中間 */
-      --text-light: #A89080;   /* 補足テキスト */
+      --cream:      #FEFCF8;
+      --warm-white: #FFFFFF;
+      --sand:       #F5F0E8;
+      --tan:        #EAE2D6;
+      --brown-lt:   #C8A882;
+      --brown:      #A07850;
+      --brown-deep: #7A5835;
+      --ink:        #3A2A1A;
+      --red:        #C0392B;
+      --red-lt:     #D9534F;
+      --red-pale:   #FDF1F0;
+      --char:       #F5F0E8;
+      --smoke:      #EAE2D6;
+      --text-mid:   #6B5040;
+      --text-light: #A89080;
       --border:     rgba(160,120,80,0.14);
       --shadow:     rgba(120,80,40,0.08);
+      /* LINE */
+      --line-green: #06C755;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -64,7 +65,6 @@
       overflow-x: hidden;
     }
 
-    /* sm クラス */
     .sm { font-size: 0.78em; }
 
     /* ━━━━━━━━━━━━━━━━━━━━━━
@@ -82,17 +82,13 @@
       padding: 12px 48px;
       box-shadow: 0 1px 0 var(--border);
     }
-    .nav-brand {
-      display: flex; align-items: baseline; gap: 10px;
-    }
+    .nav-brand { display: flex; align-items: baseline; gap: 10px; }
     .nav-brand-main {
       font-family: 'Noto Serif JP', serif;
       font-size: 1.1rem; font-weight: 700;
       color: var(--brown-deep); letter-spacing: 0.12em;
     }
-    .nav-brand-sub {
-      font-size: 0.68rem; letter-spacing: 0.18em; color: var(--text-light);
-    }
+    .nav-brand-sub { font-size: 0.68rem; letter-spacing: 0.18em; color: var(--text-light); }
     .nav-links { display: flex; gap: 32px; list-style: none; align-items: center; }
     .nav-links a {
       font-size: 0.72rem; letter-spacing: 0.14em; color: var(--text-mid);
@@ -108,7 +104,7 @@
     .nav-cta:hover { background: var(--brown-deep) !important; }
 
     /* ━━━━━━━━━━━━━━━━━━━━━━
-       HERO — 鉄板の熱気
+       HERO
     ━━━━━━━━━━━━━━━━━━━━━━ */
     .hero {
       min-height: 100vh;
@@ -118,8 +114,6 @@
       position: relative;
       overflow: hidden;
     }
-
-    /* 背景テクスチャ：やわらかいクリーム */
     .hero::before {
       content: '';
       position: absolute; inset: 0;
@@ -128,32 +122,25 @@
         radial-gradient(ellipse 50% 60% at 20% 30%, rgba(234,226,214,0.7) 0%, transparent 65%);
       pointer-events: none;
     }
-    /* 斜めライン装飾 */
     .hero::after {
       content: '';
       position: absolute; inset: 0;
       background: repeating-linear-gradient(
-        -55deg,
-        transparent,
-        transparent 60px,
-        rgba(160,120,80,0.04) 60px,
-        rgba(160,120,80,0.04) 61px
+        -55deg, transparent, transparent 60px,
+        rgba(160,120,80,0.04) 60px, rgba(160,120,80,0.04) 61px
       );
       pointer-events: none;
     }
-
     .hero-left {
       display: flex; flex-direction: column; justify-content: center;
       padding: 130px 56px 80px 80px;
       position: relative; z-index: 2;
     }
-
     .hero-badge {
       display: inline-flex; align-items: center; gap: 10px;
       background: rgba(192,57,43,0.07);
       border: 1px solid rgba(192,57,43,0.25);
-      border-radius: 2px;
-      padding: 6px 16px;
+      border-radius: 2px; padding: 6px 16px;
       font-size: 0.68rem; letter-spacing: 0.25em; color: var(--red);
       margin-bottom: 28px; width: fit-content;
       opacity: 0; animation: fadeUp 0.7s 0.2s ease forwards;
@@ -162,36 +149,28 @@
       width: 6px; height: 6px; background: var(--red-lt); border-radius: 50%;
       animation: blink 1.5s 1s ease-in-out infinite;
     }
-
     .hero h1 {
       font-family: 'Noto Serif JP', serif;
-      font-size: clamp(2.6rem, 4.5vw, 4.4rem);
-      font-weight: 900;
-      line-height: 1.2;
-      color: var(--brown-deep);
-      letter-spacing: 0.05em;
-      margin-bottom: 12px;
+      font-size: clamp(2.2rem, 4vw, 3.8rem);
+      font-weight: 900; line-height: 1.25;
+      color: var(--brown-deep); letter-spacing: 0.03em;
+      margin-bottom: 16px;
       opacity: 0; animation: fadeUp 0.9s 0.4s ease forwards;
     }
     .hero h1 .sm { font-size: 0.78em; color: var(--text-light); }
     .hero h1 .accent { color: var(--red-lt); }
-
     .hero-sub {
-      font-size: clamp(1rem, 1.6vw, 1.3rem);
-      font-weight: 300;
-      color: var(--text-mid);
-      line-height: 1.9; margin-bottom: 36px;
+      font-size: clamp(1.1rem, 1.8vw, 1.45rem); font-weight: 500;
+      color: var(--brown-deep); line-height: 1.75; margin-bottom: 28px;
       opacity: 0; animation: fadeUp 0.8s 0.58s ease forwards;
     }
     .hero-sub .sm { font-size: 0.78em; }
-
     .hero-desc {
-      font-size: 0.86rem; line-height: 2.1;
-      color: var(--text-light);
+      font-size: clamp(1rem, 1.4vw, 1.2rem); line-height: 1.85;
+      color: var(--text-mid); font-weight: 400;
       max-width: 380px; margin-bottom: 48px;
       opacity: 0; animation: fadeUp 0.7s 0.72s ease forwards;
     }
-
     .hero-actions {
       display: flex; gap: 14px; flex-wrap: wrap;
       opacity: 0; animation: fadeUp 0.7s 0.86s ease forwards;
@@ -201,49 +180,32 @@
       background: var(--red); color: #fff;
       padding: 16px 36px; border-radius: 3px;
       font-size: 0.88rem; letter-spacing: 0.12em;
-      text-decoration: none; font-family: 'Noto Sans JP', sans-serif;
-      font-weight: 500;
+      text-decoration: none; font-weight: 500;
       transition: all 0.3s; box-shadow: 0 4px 20px rgba(192,57,43,0.4);
     }
-    .btn-red:hover {
-      background: #A32318;
-      box-shadow: 0 8px 32px rgba(192,57,43,0.5);
-      transform: translateY(-1px);
-    }
+    .btn-red:hover { background: #A32318; box-shadow: 0 8px 32px rgba(192,57,43,0.5); transform: translateY(-1px); }
     .btn-ghost {
       display: inline-flex; align-items: center; gap: 8px;
       border: 1px solid rgba(120,88,52,0.35); color: var(--text-mid);
       padding: 15px 32px; border-radius: 3px;
       font-size: 0.88rem; letter-spacing: 0.12em;
-      text-decoration: none; font-weight: 400;
-      transition: all 0.3s;
+      text-decoration: none; font-weight: 400; transition: all 0.3s;
     }
-    .btn-ghost:hover {
-      background: rgba(120,88,52,0.06);
-      border-color: var(--brown);
-      color: var(--brown-deep);
-    }
-
-    /* Hero right — 視覚的インパクト */
+    .btn-ghost:hover { background: rgba(120,88,52,0.06); border-color: var(--brown); color: var(--brown-deep); }
     .hero-right {
       position: relative; display: flex;
-      align-items: center; justify-content: center;
-      overflow: hidden;
+      align-items: center; justify-content: center; overflow: hidden;
     }
-    /* 大きな円 */
     .hero-circle-outer {
-      position: absolute;
-      width: min(85%, 460px); aspect-ratio: 1; border-radius: 50%;
+      position: absolute; width: min(85%, 460px); aspect-ratio: 1; border-radius: 50%;
       border: 1px solid rgba(192,57,43,0.25);
       opacity: 0; animation: fadeIn 1.4s 0.6s ease forwards;
     }
     .hero-circle-inner {
-      position: absolute;
-      width: min(68%, 370px); aspect-ratio: 1; border-radius: 50%;
+      position: absolute; width: min(68%, 370px); aspect-ratio: 1; border-radius: 50%;
       border: 1px solid rgba(192,57,43,0.15);
       opacity: 0; animation: fadeIn 1.4s 0.9s ease forwards;
     }
-    /* メインの丸テキストパネル */
     .hero-plate {
       position: relative; z-index: 3; text-align: center;
       width: min(62%, 340px); aspect-ratio: 1; border-radius: 50%;
@@ -251,56 +213,28 @@
       border: 2px solid rgba(192,57,43,0.22);
       display: flex; flex-direction: column;
       align-items: center; justify-content: center; gap: 10px;
-      box-shadow:
-        0 0 60px rgba(192,57,43,0.1),
-        0 16px 48px rgba(120,80,40,0.12),
-        inset 0 2px 8px rgba(255,255,255,0.9);
+      box-shadow: 0 0 60px rgba(192,57,43,0.1), 0 16px 48px rgba(120,80,40,0.12), inset 0 2px 8px rgba(255,255,255,0.9);
       opacity: 0; animation: fadeIn 1s 0.5s ease forwards;
     }
-    .hero-plate-year {
-      font-family: 'Noto Serif JP', serif;
-      font-size: 0.65rem; letter-spacing: 0.3em;
-      color: var(--red);
-    }
-    .hero-plate-main {
-      font-family: 'Noto Serif JP', serif;
-      font-size: 1.35rem; font-weight: 700;
-      color: var(--brown-deep); letter-spacing: 0.15em;
-      line-height: 1.7;
-    }
-    .hero-plate-divider {
-      width: 40px; height: 1px; background: rgba(192,57,43,0.3);
-    }
-    .hero-plate-sub {
-      font-size: 0.68rem; letter-spacing: 0.2em;
-      color: var(--text-light);
-    }
-    /* フローティング口コミバッジ */
+    .hero-plate-year { font-family: 'Noto Serif JP', serif; font-size: 0.65rem; letter-spacing: 0.3em; color: var(--red); }
+    .hero-plate-main { font-family: 'Noto Serif JP', serif; font-size: 1.35rem; font-weight: 700; color: var(--brown-deep); letter-spacing: 0.15em; line-height: 1.7; }
+    .hero-plate-divider { width: 40px; height: 1px; background: rgba(192,57,43,0.3); }
+    .hero-plate-sub { font-size: 0.68rem; letter-spacing: 0.2em; color: var(--text-light); }
     .hero-float {
       position: absolute; z-index: 4;
-      background: rgba(255,255,255,0.96);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(192,57,43,0.2);
-      box-shadow: 0 4px 16px rgba(120,80,40,0.12);
-      border-radius: 8px; padding: 12px 16px;
-      max-width: 220px;
-      opacity: 0;
+      background: rgba(255,255,255,0.96); backdrop-filter: blur(8px);
+      border: 1px solid rgba(192,57,43,0.2); box-shadow: 0 4px 16px rgba(120,80,40,0.12);
+      border-radius: 8px; padding: 12px 16px; max-width: 220px; opacity: 0;
     }
     .hero-float-1 { top: 18%; left: 4%; animation: floatIn 0.7s 1.3s ease forwards; }
     .hero-float-2 { bottom: 16%; right: 2%; animation: floatIn 0.7s 1.5s ease forwards; }
     .hero-float-stars { color: #E8B84A; font-size: 0.7rem; margin-bottom: 4px; }
-    .hero-float-text {
-      font-size: 0.72rem; line-height: 1.6;
-      color: var(--text-mid);
-    }
+    .hero-float-text { font-size: 0.72rem; line-height: 1.6; color: var(--text-mid); }
     .hero-float-text em { color: var(--red-lt); font-style: normal; font-weight: 700; }
-
-    /* スクロール */
     .hero-scroll {
       position: absolute; bottom: 32px; left: 80px; z-index: 3;
       display: flex; align-items: center; gap: 10px;
-      font-size: 0.62rem; letter-spacing: 0.28em;
-      color: var(--text-light);
+      font-size: 0.62rem; letter-spacing: 0.28em; color: var(--text-light);
       opacity: 0; animation: fadeIn 1s 1.8s ease forwards;
     }
     .scroll-line {
@@ -310,33 +244,26 @@
     }
 
     /* ━━━━━━━━━━━━━━━━━━━━━━
-       STRIP — ファクト帯
+       STRIP
     ━━━━━━━━━━━━━━━━━━━━━━ */
     .strip {
-      background: var(--brown-deep);
-      padding: 20px 80px;
-      display: flex; justify-content: center; gap: 64px;
-      overflow: hidden;
+      background: var(--brown-deep); padding: 20px 80px;
+      display: flex; justify-content: center; gap: 64px; overflow: hidden;
     }
     .strip-item { display: flex; align-items: center; gap: 14px; white-space: nowrap; }
-    .strip-num {
-      font-family: 'Noto Serif JP', serif;
-      font-size: 1.5rem; font-weight: 700; color: var(--cream);
-    }
-    .strip-label { font-size: 0.68rem; letter-spacing: 0.15em; color: var(--text-mid); line-height: 1.6; }
-    .strip-div { width: 1px; height: 36px; background: var(--text-light); }
+    .strip-num { font-family: 'Noto Serif JP', serif; font-size: 1.5rem; font-weight: 700; color: var(--cream); }
+    .strip-label { font-size: 0.68rem; letter-spacing: 0.15em; color: rgba(254,252,248,0.65); line-height: 1.6; }
+    .strip-div { width: 1px; height: 36px; background: rgba(254,252,248,0.25); }
 
     /* ━━━━━━━━━━━━━━━━━━━━━━
-       VOICE — 冒頭の共感
+       VOICE
     ━━━━━━━━━━━━━━━━━━━━━━ */
     .voice-section {
-      padding: 100px 80px;
-      background: var(--warm-white);
+      padding: 100px 80px; background: var(--warm-white);
       position: relative; overflow: hidden;
     }
     .voice-section::before {
-      content: '';
-      position: absolute; top: -120px; right: -80px;
+      content: ''; position: absolute; top: -120px; right: -80px;
       width: 500px; height: 500px; border-radius: 50%;
       background: radial-gradient(circle, var(--sand) 0%, transparent 65%);
       pointer-events: none;
@@ -348,43 +275,30 @@
     .voice-text h2 {
       font-family: 'Noto Serif JP', serif;
       font-size: clamp(1.7rem, 2.8vw, 2.5rem);
-      font-weight: 700; line-height: 1.6;
-      color: var(--brown-deep); letter-spacing: 0.04em;
-      margin-bottom: 28px;
+      font-weight: 700; line-height: 1.6; color: var(--brown-deep);
+      letter-spacing: 0.04em; margin-bottom: 28px;
     }
     .voice-text h2 .sm { font-size: 0.78em; color: var(--text-light); }
     .voice-text h2 .accent { color: var(--red); }
-    .voice-text p {
-      font-size: 0.9rem; line-height: 2.2; color: var(--text-mid); margin-bottom: 16px;
-    }
+    .voice-text p { font-size: 0.9rem; line-height: 2.2; color: var(--text-mid); margin-bottom: 16px; }
     .voice-bubbles { display: flex; flex-direction: column; gap: 16px; }
     .bubble {
-      background: var(--sand);
-      border-radius: 0 12px 12px 12px;
-      padding: 18px 22px;
-      position: relative;
+      background: var(--sand); border-radius: 0 12px 12px 12px;
+      padding: 18px 22px; position: relative;
     }
     .bubble::before {
-      content: '';
-      position: absolute; top: 0; left: -8px;
+      content: ''; position: absolute; top: 0; left: -8px;
       border: 8px solid transparent;
-      border-right-color: var(--sand);
-      border-top-color: var(--sand);
+      border-right-color: var(--sand); border-top-color: var(--sand);
     }
-    .bubble p {
-      font-size: 0.86rem; line-height: 1.8; color: var(--brown-deep); margin: 0;
-    }
-    .bubble-speaker {
-      font-size: 0.65rem; letter-spacing: 0.15em;
-      color: var(--text-light); margin-bottom: 6px;
-    }
+    .bubble p { font-size: 0.86rem; line-height: 1.8; color: var(--brown-deep); margin: 0; }
+    .bubble-speaker { font-size: 0.65rem; letter-spacing: 0.15em; color: var(--text-light); margin-bottom: 6px; }
 
     /* ━━━━━━━━━━━━━━━━━━━━━━
        MENU
     ━━━━━━━━━━━━━━━━━━━━━━ */
     .menu-section {
-      padding: 100px 80px;
-      background: var(--cream);
+      padding: 100px 80px; background: var(--cream);
       position: relative; overflow: hidden;
     }
     .menu-deco {
@@ -392,16 +306,11 @@
       width: 400px; height: 400px; border-radius: 50%;
       background: rgba(212,191,160,0.25); pointer-events: none;
     }
-
-    /* section common */
     .eyebrow {
       font-size: 0.68rem; letter-spacing: 0.3em; color: var(--red);
-      display: inline-flex; align-items: center; gap: 10px;
-      margin-bottom: 14px;
+      display: inline-flex; align-items: center; gap: 10px; margin-bottom: 14px;
     }
-    .eyebrow::before, .eyebrow::after {
-      content: ''; display: block; width: 24px; height: 1px; background: var(--red);
-    }
+    .eyebrow::before, .eyebrow::after { content: ''; display: block; width: 24px; height: 1px; background: var(--red); }
     .sec-title {
       font-family: 'Noto Serif JP', serif;
       font-size: clamp(2rem, 3.5vw, 3rem); font-weight: 700;
@@ -409,25 +318,19 @@
     }
     .sec-title .sm { font-size: 0.78em; color: var(--text-light); }
     .sec-header { text-align: center; margin-bottom: 64px; }
-
-    /* メインカード — 焼きそば */
     .menu-hero-card {
       max-width: 1040px; margin: 0 auto 48px;
-      background: var(--sand);
-      border-radius: 8px; overflow: hidden;
-      box-shadow: 0 8px 32px rgba(120,80,40,0.12);
-      border: 1px solid var(--border);
+      background: var(--sand); border-radius: 8px; overflow: hidden;
+      box-shadow: 0 8px 32px rgba(120,80,40,0.12); border: 1px solid var(--border);
       display: grid; grid-template-columns: 1fr 1fr;
     }
     .menu-hero-visual {
       background: linear-gradient(145deg, #EAE2D6, #F5F0E8);
       display: flex; align-items: center; justify-content: center;
-      aspect-ratio: 1; position: relative; overflow: hidden;
-      min-height: 280px;
+      aspect-ratio: 1; position: relative; overflow: hidden; min-height: 280px;
     }
     .menu-hero-visual::before {
-      content: '';
-      position: absolute; inset: 0;
+      content: ''; position: absolute; inset: 0;
       background:
         radial-gradient(circle at 60% 50%, rgba(192,57,43,0.1) 0%, transparent 60%),
         radial-gradient(circle at 30% 80%, rgba(160,120,80,0.08) 0%, transparent 50%);
@@ -437,85 +340,54 @@
       filter: drop-shadow(0 0 24px rgba(192,57,43,0.6));
       animation: sizzle 3s ease-in-out infinite;
     }
-    .menu-hero-content {
-      padding: 48px 44px;
-      display: flex; flex-direction: column; justify-content: center;
-    }
-    .menu-hero-tag {
-      font-size: 0.62rem; letter-spacing: 0.25em; color: var(--red);
-      margin-bottom: 12px;
-    }
+    .menu-hero-content { padding: 48px 44px; display: flex; flex-direction: column; justify-content: center; }
+    .menu-hero-tag { font-size: 0.62rem; letter-spacing: 0.25em; color: var(--red); margin-bottom: 12px; }
     .menu-hero-name {
       font-family: 'Noto Serif JP', serif;
       font-size: 1.9rem; font-weight: 900; color: var(--brown-deep);
       letter-spacing: 0.08em; margin-bottom: 16px; line-height: 1.3;
     }
     .menu-hero-name .sm { font-size: 0.78em; color: var(--text-light); }
-    .menu-hero-desc {
-      font-size: 0.84rem; line-height: 2; color: var(--text-mid); margin-bottom: 28px;
-    }
-    .menu-hero-price {
-      font-family: 'Noto Serif JP', serif;
-      font-size: 0.65rem; letter-spacing: 0.2em; color: var(--text-light);
-      margin-bottom: 6px;
-    }
-    .menu-hero-price-num {
-      font-size: 2.2rem; font-weight: 700; color: var(--brown-deep);
-      line-height: 1;
-    }
+    .menu-hero-desc { font-size: 0.84rem; line-height: 2; color: var(--text-mid); margin-bottom: 28px; }
+    .menu-hero-price { font-family: 'Noto Serif JP', serif; font-size: 0.65rem; letter-spacing: 0.2em; color: var(--text-light); margin-bottom: 6px; }
+    .menu-hero-price-num { font-size: 2.2rem; font-weight: 700; color: var(--brown-deep); line-height: 1; }
     .menu-hero-price-num small { font-size: 0.45em; letter-spacing: 0.1em; }
-
-    /* メニューグリッド */
     .menu-grid {
       max-width: 1040px; margin: 0 auto;
       display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
     }
     .menu-card {
-      background: #fff; border-radius: 8px;
-      border: 1px solid var(--border);
-      padding: 28px 24px;
-      box-shadow: var(--shadow-sm);
-      transition: all 0.3s;
-      position: relative; overflow: hidden;
+      background: #fff; border-radius: 8px; border: 1px solid var(--border);
+      padding: 28px 24px; transition: all 0.3s; position: relative; overflow: hidden;
     }
     .menu-card::before {
-      content: '';
-      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
       background: var(--tan); transition: background 0.3s;
     }
     .menu-card:hover { transform: translateY(-4px); box-shadow: 0 10px 32px rgba(120,80,40,0.12); }
     .menu-card:hover::before { background: var(--red); }
-    .menu-card-label {
-      font-size: 0.62rem; letter-spacing: 0.2em; color: var(--text-light); margin-bottom: 8px;
-    }
-    .menu-card-name {
-      font-family: 'Noto Serif JP', serif;
-      font-size: 1rem; font-weight: 700; color: var(--brown-deep);
-      letter-spacing: 0.06em; margin-bottom: 8px;
-    }
-    .menu-card-desc {
-      font-size: 0.78rem; color: var(--text-light); line-height: 1.7; margin-bottom: 14px;
-    }
-    .menu-card-price {
-      font-family: 'Noto Serif JP', serif;
-      font-size: 1.5rem; font-weight: 700; color: var(--brown);
-    }
+    .menu-card-label { font-size: 0.62rem; letter-spacing: 0.2em; color: var(--text-light); margin-bottom: 8px; }
+    .menu-card-name { font-family: 'Noto Serif JP', serif; font-size: 1rem; font-weight: 700; color: var(--brown-deep); letter-spacing: 0.06em; margin-bottom: 8px; }
+    .menu-card-desc { font-size: 0.78rem; color: var(--text-light); line-height: 1.7; margin-bottom: 14px; }
+    .menu-card-price { font-family: 'Noto Serif JP', serif; font-size: 1.5rem; font-weight: 700; color: var(--brown); }
     .menu-card-price small { font-size: 0.5em; }
 
     /* ━━━━━━━━━━━━━━━━━━━━━━
-       STORY — ストーリーセクション
+       STORY — 修正：茶色→クリーム系
     ━━━━━━━━━━━━━━━━━━━━━━ */
     .story-section {
       padding: 100px 80px;
-      background: var(--brown-deep);
+      /* ★ 修正1: 茶色 → クリーム系に変更 */
+      background: var(--sand);
       position: relative; overflow: hidden;
     }
+    /* ★ 修正2: 背景装飾テキストも見えやすい色に */
     .story-section::before {
       content: '39';
       position: absolute; bottom: -40px; right: -20px;
       font-family: 'Noto Serif JP', serif;
       font-size: 22rem; font-weight: 900;
-      color: rgba(120,80,40,0.06); line-height: 1;
+      color: rgba(160,120,80,0.08); line-height: 1;
       pointer-events: none;
     }
     .story-inner {
@@ -525,41 +397,33 @@
     .story-timeline { position: relative; }
     .timeline-line {
       position: absolute; top: 0; left: 22px; bottom: 0;
-      width: 1px; background: rgba(120,80,40,0.15);
+      width: 1px; background: rgba(192,57,43,0.2);
     }
-    .timeline-item {
-      display: flex; gap: 24px; margin-bottom: 32px; position: relative;
-    }
+    .timeline-item { display: flex; gap: 24px; margin-bottom: 32px; position: relative; }
     .timeline-dot {
       width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0;
-      background: rgba(192,57,43,0.08);
-      border: 1px solid rgba(192,57,43,0.25);
+      /* ★ 修正3: ドット背景を白ベースに */
+      background: #fff;
+      border: 1.5px solid rgba(192,57,43,0.35);
       display: flex; align-items: center; justify-content: center;
       font-size: 0.8rem; color: var(--red); position: relative; z-index: 2;
+      box-shadow: 0 2px 8px rgba(120,80,40,0.1);
     }
-    .timeline-content {}
-    .timeline-year {
-      font-size: 0.62rem; letter-spacing: 0.2em; color: var(--red); margin-bottom: 4px;
-    }
-    .timeline-text {
-      font-size: 0.86rem; line-height: 1.8; color: var(--text-mid);
-    }
-    .timeline-text strong { color: var(--brown-deep); font-weight: 500; }
+    .timeline-year { font-size: 0.62rem; letter-spacing: 0.2em; color: var(--red); margin-bottom: 4px; }
+    /* ★ 修正4: タイムラインテキストを暗くしてコントラスト確保 */
+    .timeline-text { font-size: 0.86rem; line-height: 1.8; color: var(--ink); }
+    .timeline-text strong { color: var(--brown-deep); font-weight: 700; }
 
-    .story-text {}
     .story-text .eyebrow { color: var(--red); }
     .story-text .eyebrow::before, .story-text .eyebrow::after { background: var(--red); }
     .story-text h2 {
       font-family: 'Noto Serif JP', serif;
       font-size: clamp(1.8rem, 3vw, 2.6rem); font-weight: 900;
-      line-height: 1.45; color: var(--brown-deep); letter-spacing: 0.04em;
-      margin-bottom: 28px;
+      line-height: 1.45; color: var(--brown-deep); letter-spacing: 0.04em; margin-bottom: 28px;
     }
     .story-text h2 .sm { font-size: 0.78em; color: var(--text-light); }
-    .story-text p {
-      font-size: 0.9rem; line-height: 2.2;
-      color: var(--text-mid); margin-bottom: 18px;
-    }
+    /* ★ 修正5: ストーリー本文テキストのコントラスト向上 */
+    .story-text p { font-size: 0.9rem; line-height: 2.2; color: var(--ink); margin-bottom: 18px; }
     .story-quote {
       margin-top: 32px; padding: 28px 32px;
       background: rgba(192,57,43,0.05);
@@ -571,47 +435,30 @@
       font-size: 0.95rem; line-height: 2; font-weight: 500;
       color: var(--brown-deep); margin: 0;
     }
-    .story-stats {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 32px;
-    }
+    .story-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 32px; }
     .story-stat {
-      background: #FFFFFF;
-      border: 1px solid var(--border);
-      box-shadow: 0 2px 8px var(--shadow);
-      border-radius: 6px; padding: 16px 18px;
+      background: #FFFFFF; border: 1px solid var(--border);
+      box-shadow: 0 2px 8px var(--shadow); border-radius: 6px; padding: 16px 18px;
     }
-    .story-stat-label {
-      font-size: 0.6rem; letter-spacing: 0.2em;
-      color: var(--red); margin-bottom: 4px;
-    }
-    .story-stat-value {
-      font-family: 'Noto Serif JP', serif;
-      font-size: 0.88rem; font-weight: 700; color: var(--brown-deep);
-    }
+    .story-stat-label { font-size: 0.6rem; letter-spacing: 0.2em; color: var(--red); margin-bottom: 4px; }
+    .story-stat-value { font-family: 'Noto Serif JP', serif; font-size: 0.88rem; font-weight: 700; color: var(--brown-deep); }
 
     /* ━━━━━━━━━━━━━━━━━━━━━━
        REVIEWS
     ━━━━━━━━━━━━━━━━━━━━━━ */
-    .review-section {
-      padding: 100px 80px;
-      background: var(--warm-white);
-    }
+    .review-section { padding: 100px 80px; background: var(--warm-white); }
     .review-grid {
       max-width: 1040px; margin: 0 auto;
       display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
     }
     .review-card {
-      background: #fff; border-radius: 10px;
-      padding: 28px 24px;
-      border: 1px solid var(--border);
-      box-shadow: 0 2px 12px rgba(120,80,40,0.06);
+      background: #fff; border-radius: 10px; padding: 28px 24px;
+      border: 1px solid var(--border); box-shadow: 0 2px 12px rgba(120,80,40,0.06);
       transition: all 0.3s;
     }
     .review-card:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(120,80,40,0.1); }
     .review-stars { color: #E8B84A; font-size: 0.8rem; margin-bottom: 12px; }
-    .review-text {
-      font-size: 0.84rem; line-height: 1.9; color: var(--text-mid); margin-bottom: 16px;
-    }
+    .review-text { font-size: 0.84rem; line-height: 1.9; color: var(--text-mid); margin-bottom: 16px; }
     .review-text em { color: var(--red); font-style: normal; font-weight: 700; }
     .review-meta {
       font-size: 0.65rem; letter-spacing: 0.12em; color: var(--text-light);
@@ -622,46 +469,32 @@
       content: ''; display: block; width: 20px; height: 20px; border-radius: 50%;
       background: var(--sand); flex-shrink: 0;
     }
-    /* 大きな口コミカード */
     .review-card.featured {
       grid-column: 1 / -1;
       background: var(--red-pale); border-color: rgba(192,57,43,0.2);
-      display: grid; grid-template-columns: auto 1fr;
-      gap: 28px; align-items: start;
+      display: grid; grid-template-columns: auto 1fr; gap: 28px; align-items: start;
     }
     .review-card.featured .review-text { color: var(--text-mid); font-size: 0.9rem; }
     .review-card.featured .review-meta { color: var(--text-light); border-color: var(--border); }
-    .review-featured-icon {
-      font-size: 2rem; padding-top: 4px;
-    }
+    .review-featured-icon { font-size: 2rem; padding-top: 4px; }
 
     /* ━━━━━━━━━━━━━━━━━━━━━━
        TAKEOUT
     ━━━━━━━━━━━━━━━━━━━━━━ */
-    .takeout-section {
-      padding: 100px 80px;
-      background: var(--cream);
-    }
+    .takeout-section { padding: 100px 80px; background: var(--cream); }
     .takeout-inner { max-width: 1040px; margin: 0 auto; }
-    .takeout-layout {
-      display: grid; grid-template-columns: 1fr 360px; gap: 48px; align-items: start;
-    }
+    .takeout-layout { display: grid; grid-template-columns: 1fr 360px; gap: 48px; align-items: start; }
     .takeout-desc h3 {
       font-family: 'Noto Serif JP', serif;
       font-size: 1.2rem; font-weight: 700; color: var(--brown-deep);
       letter-spacing: 0.06em; margin-bottom: 16px;
     }
     .takeout-desc h3 .sm { font-size: 0.78em; color: var(--text-light); }
-    .takeout-desc p {
-      font-size: 0.88rem; line-height: 2.1; color: var(--text-mid); margin-bottom: 20px;
-    }
-    .takeout-items {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 28px;
-    }
+    .takeout-desc p { font-size: 0.88rem; line-height: 2.1; color: var(--text-mid); margin-bottom: 20px; }
+    .takeout-items { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 28px; }
     .takeout-item {
-      background: #fff; border: 1px solid var(--border);
-      border-radius: 8px; padding: 18px 16px;
-      transition: all 0.25s;
+      background: #fff; border: 1px solid var(--border); border-radius: 8px;
+      padding: 18px 16px; transition: all 0.25s;
     }
     .takeout-item:hover { border-color: var(--red); box-shadow: 0 4px 16px rgba(192,57,43,0.1); }
     .takeout-item-name {
@@ -669,23 +502,17 @@
       font-size: 0.9rem; font-weight: 700; color: var(--brown-deep);
       letter-spacing: 0.06em; margin-bottom: 6px;
     }
-    .takeout-item-price {
-      font-size: 1.2rem; font-weight: 700; color: var(--brown);
-      font-family: 'Noto Serif JP', serif;
-    }
+    .takeout-item-price { font-size: 1.2rem; font-weight: 700; color: var(--brown); font-family: 'Noto Serif JP', serif; }
     .takeout-item-price small { font-size: 0.55em; }
-
-    /* 注文パネル */
     .order-panel {
-      background: var(--sand); border-radius: 10px;
-      padding: 36px 30px; color: var(--ink); position: sticky; top: 96px;
+      background: var(--sand); border-radius: 10px; padding: 36px 30px;
+      color: var(--ink); position: sticky; top: 96px;
       border: 1px solid var(--border); box-shadow: 0 4px 20px var(--shadow);
     }
     .order-panel-title {
       font-family: 'Noto Serif JP', serif;
       font-size: 1rem; font-weight: 700; letter-spacing: 0.1em;
-      margin-bottom: 22px; padding-bottom: 16px;
-      border-bottom: 1px solid var(--border);
+      margin-bottom: 22px; padding-bottom: 16px; border-bottom: 1px solid var(--border);
     }
     .order-panel-title .sm { font-size: 0.78em; }
     .time-row { margin-bottom: 16px; }
@@ -698,28 +525,19 @@
       border: 1px solid rgba(192,57,43,0.15);
     }
     .order-tel-btn {
-      display: block; text-align: center;
-      background: var(--red); color: #fff;
-      border-radius: 6px; padding: 18px 16px;
-      text-decoration: none;
-      transition: all 0.25s;
-      box-shadow: 0 4px 16px rgba(192,57,43,0.3);
+      display: block; text-align: center; background: var(--red); color: #fff;
+      border-radius: 6px; padding: 18px 16px; text-decoration: none;
+      transition: all 0.25s; box-shadow: 0 4px 16px rgba(192,57,43,0.3);
     }
     .order-tel-btn:hover { background: #A32318; }
     .order-tel-label { font-size: 0.62rem; letter-spacing: 0.18em; display: block; margin-bottom: 4px; color: rgba(255,255,255,0.75); }
-    .order-tel-num {
-      font-family: 'Noto Serif JP', serif;
-      font-size: 1.5rem; font-weight: 700; display: block; letter-spacing: 0.05em;
-    }
+    .order-tel-num { font-family: 'Noto Serif JP', serif; font-size: 1.5rem; font-weight: 700; display: block; letter-spacing: 0.05em; }
 
     /* ━━━━━━━━━━━━━━━━━━━━━━
        ACCESS
     ━━━━━━━━━━━━━━━━━━━━━━ */
     .access-section { padding: 100px 80px; background: var(--warm-white); }
-    .access-inner {
-      max-width: 1040px; margin: 0 auto;
-      display: grid; grid-template-columns: 1fr 1fr; gap: 60px;
-    }
+    .access-inner { max-width: 1040px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; }
     .access-info h2 {
       font-family: 'Noto Serif JP', serif;
       font-size: clamp(1.7rem, 2.6vw, 2.2rem); font-weight: 700;
@@ -736,19 +554,14 @@
     .info-val a { color: var(--ink); text-decoration: none; }
     .info-val a:hover { color: var(--red); }
     .info-val small { display: block; font-size: 0.8em; color: var(--text-light); margin-top: 2px; font-family: 'Noto Sans JP', sans-serif; }
-    .map-card {
-      background: var(--sand); border-radius: 10px;
-      overflow: hidden; box-shadow: 0 4px 20px var(--shadow);
-    }
+    .map-card { background: var(--sand); border-radius: 10px; overflow: hidden; box-shadow: 0 4px 20px var(--shadow); }
     .map-visual {
-      height: 280px;
-      background: linear-gradient(145deg, #D4BFA0, #B8906A);
+      height: 280px; background: linear-gradient(145deg, #D4BFA0, #B8906A);
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       gap: 14px; position: relative; overflow: hidden;
     }
     .map-visual::before {
-      content: '';
-      position: absolute; inset: 0;
+      content: ''; position: absolute; inset: 0;
       background:
         repeating-linear-gradient(0deg, transparent, transparent 30px, rgba(255,255,255,0.08) 30px, rgba(255,255,255,0.08) 31px),
         repeating-linear-gradient(90deg, transparent, transparent 30px, rgba(255,255,255,0.08) 30px, rgba(255,255,255,0.08) 31px);
@@ -763,8 +576,7 @@
     .map-chip {
       background: rgba(90,60,30,0.75); backdrop-filter: blur(6px);
       border-radius: 30px; padding: 8px 20px;
-      font-family: 'Noto Serif JP', serif;
-      font-size: 0.78rem; color: var(--cream);
+      font-family: 'Noto Serif JP', serif; font-size: 0.78rem; color: var(--cream);
       position: relative; z-index: 2;
     }
     .map-footer { padding: 18px 22px; display: flex; justify-content: space-between; align-items: center; }
@@ -776,16 +588,14 @@
     .map-btn:hover { background: var(--brown-deep); }
 
     /* ━━━━━━━━━━━━━━━━━━━━━━
-       CTA
+       CTA — 修正：コピー変更 + LINE追加
     ━━━━━━━━━━━━━━━━━━━━━━ */
     .cta-section {
-      padding: 100px 80px;
-      background: var(--sand);
+      padding: 100px 80px; background: var(--sand);
       text-align: center; position: relative; overflow: hidden;
     }
     .cta-section::before {
-      content: '';
-      position: absolute; inset: 0;
+      content: ''; position: absolute; inset: 0;
       background: radial-gradient(ellipse 60% 80% at 50% 50%, rgba(192,57,43,0.07) 0%, transparent 70%);
       pointer-events: none;
     }
@@ -805,9 +615,13 @@
       box-shadow: 0 2px 12px var(--shadow);
     }
     .cta-card:hover { background: var(--red-pale); border-color: rgba(192,57,43,0.3); transform: translateY(-3px); box-shadow: 0 8px 28px rgba(192,57,43,0.12); }
+    /* ★ LINE カード専用スタイル */
+    .cta-card.line-card:hover { background: #F0FFF5; border-color: rgba(6,199,85,0.35); box-shadow: 0 8px 28px rgba(6,199,85,0.12); }
     .cta-card-icon { font-size: 1.8rem; margin-bottom: 10px; display: block; }
     .cta-card-label { font-size: 0.62rem; letter-spacing: 0.2em; color: var(--text-light); margin-bottom: 6px; display: block; }
     .cta-card-main { font-family: 'Noto Serif JP', serif; font-size: 1.1rem; font-weight: 700; color: var(--brown-deep); display: block; }
+    /* ★ LINE カードのmainテキストはグリーン */
+    .cta-card.line-card .cta-card-main { color: var(--line-green); }
     .cta-card-sub { font-size: 0.72rem; color: var(--text-light); margin-top: 5px; display: block; }
 
     /* ━━━━━━━━━━━━━━━━━━━━━━
@@ -819,11 +633,7 @@
       display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 60px;
       padding-bottom: 36px; border-bottom: 1px solid var(--border); margin-bottom: 24px;
     }
-    .footer-brand {
-      font-family: 'Noto Serif JP', serif;
-      font-size: 1.1rem; font-weight: 700; color: var(--brown-deep);
-      letter-spacing: 0.12em; margin-bottom: 4px;
-    }
+    .footer-brand { font-family: 'Noto Serif JP', serif; font-size: 1.1rem; font-weight: 700; color: var(--brown-deep); letter-spacing: 0.12em; margin-bottom: 4px; }
     .footer-brand-en { font-size: 0.7rem; letter-spacing: 0.2em; color: var(--text-light); margin-bottom: 14px; }
     .footer-desc { font-size: 0.76rem; line-height: 1.9; color: var(--text-light); }
     .footer-col h4 { font-size: 0.62rem; letter-spacing: 0.22em; color: var(--red); margin-bottom: 12px; }
@@ -847,7 +657,7 @@
 
     .reveal { opacity:0; transform:translateY(28px); transition:opacity .75s ease,transform .75s ease; }
     .reveal.visible { opacity:1; transform:translateY(0); }
-    .d1 { transition-delay:.1s; } .d2 { transition-delay:.2s; } .d3 { transition-delay:.3s; }
+    .d1{transition-delay:.1s;} .d2{transition-delay:.2s;} .d3{transition-delay:.3s;}
 
     /* ━━━━━━━━━━━━━━━━━━━━━━
        RESPONSIVE
@@ -867,16 +677,18 @@
       .menu-hero-visual { aspect-ratio: 16/7; min-height: 200px; }
       .menu-grid { grid-template-columns: 1fr 1fr; }
       .review-grid { grid-template-columns: 1fr; }
-      .review-card.featured { grid-column: auto; }
+      .review-card.featured { grid-column: auto; display: block; }
       .takeout-layout { grid-template-columns: 1fr; }
       .order-panel { position: static; }
       .footer-inner { grid-template-columns: 1fr; gap: 36px; }
       .footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
+      /* モバイルのCTAカードを縦並び */
+      .cta-cards { flex-direction: column; align-items: center; }
+      .cta-card { width: 100%; max-width: 360px; min-width: unset; }
     }
     @media (max-width: 480px) {
       .menu-grid { grid-template-columns: 1fr; }
       .takeout-items { grid-template-columns: 1fr; }
-      .cta-cards { flex-direction: column; align-items: center; }
       .strip { display: none; }
       .story-stats { grid-template-columns: 1fr 1fr; }
     }
@@ -907,18 +719,16 @@
       宇美町 · 創業39年 · 日田焼きそば発祥の味
     </span>
     <h1>
-      今日<span class="sm">の</span>夕飯<span class="sm">は、</span><br>
-      <span class="accent">パリパリ</span><span class="sm">の</span><br>
-      焼<span class="sm">きそば</span>にしない？
+      「夕飯作<span class="sm">るの</span><br>
+      めんどくさ<span class="sm">〜い</span>！！」<br>
+      <span style="font-size:0.62em;font-weight:700;color:var(--text-mid);letter-spacing:0.04em;">そんな日<span class="sm">も</span>ありますよね。</span>
     </h1>
     <p class="hero-sub">
-      作<span class="sm">るのが</span>めんどくさい日<span class="sm">も、</span><br>
-      みんな大好<span class="sm">きな</span>あ<span class="sm">の</span>味<span class="sm">が、</span>すぐそこ<span class="sm">に。</span>
+      <span class="accent">パリパリ</span>食感、<br>
+      食欲<span class="sm">そそる</span>ソース<span class="sm">の</span>香<span class="sm">り</span>
     </p>
     <p class="hero-desc">
-      日田焼きそば発祥の「想夫恋」。<br>
-      その中でも一番旨い、と言われる宇美店。<br>
-      テイクアウトで、今夜のご飯にどうぞ。
+      今日<span class="sm">の</span>夕飯<span class="sm">は</span>想夫恋<span class="sm">に</span>しませんか？
     </p>
     <div class="hero-actions">
       <a href="#takeout" class="btn-red">テイクアウトを注文する →</a>
@@ -931,9 +741,7 @@
     <div class="hero-circle-inner"></div>
     <div class="hero-plate">
       <p class="hero-plate-year">SINCE 1986 — 宇美町</p>
-      <div class="hero-plate-main">
-        日田焼きそば<br>専門店
-      </div>
+      <div class="hero-plate-main">日田焼きそば<br>専門店</div>
       <div class="hero-plate-divider"></div>
       <p class="hero-plate-sub">SOUFUREN UMI BRANCH</p>
     </div>
@@ -973,7 +781,7 @@
   </div>
 </div>
 
-<!-- VOICE — 共感ゾーン -->
+<!-- VOICE -->
 <section class="voice-section">
   <div class="voice-inner">
     <div class="voice-text reveal">
@@ -984,7 +792,7 @@
         <span class="accent">想夫恋</span><span class="sm">のことを。</span>
       </h2>
       <p>今日は料理したくない日、孫が帰ってきた日、家族みんなで何か食べたい夜。そんなとき、みんなが好きで、誰も文句を言わないものといえば——</p>
-      <p>宇美町で39年。変わらないパリパリの麺と、丁寧な焼き方が、今夜もお待ちしています。</p>
+      <p>宇美町で39年。変わらないパリパリの麺と、丁寧な焼き方で皆様の笑顔をつくります。</p>
     </div>
     <div class="voice-bubbles reveal d1">
       <div class="bubble">
@@ -1010,11 +818,10 @@
     <div class="eyebrow">MENU</div>
     <h2 class="sec-title">
       シンプル<span class="sm">だから、</span>奥深<span class="sm">い。</span><br>
-      日田焼<span class="sm">きそば</span><span class="sm">の</span>一品。
+      日田焼きそば<span class="sm">の</span>一品。
     </h2>
   </div>
 
-  <!-- メインカード -->
   <div class="menu-hero-card reveal">
     <div class="menu-hero-visual">
       <div class="menu-hero-icon">🍜</div>
@@ -1035,7 +842,6 @@
     </div>
   </div>
 
-  <!-- メニューグリッド -->
   <div class="menu-grid">
     <div class="menu-card reveal">
       <p class="menu-card-label">YAKISOBA</p>
@@ -1076,7 +882,7 @@
   </div>
 </section>
 
-<!-- STORY -->
+<!-- STORY ★ 修正：背景・テキストカラー -->
 <section class="story-section" id="story">
   <div class="story-inner">
     <div class="story-timeline reveal">
@@ -1294,11 +1100,12 @@
   </div>
 </section>
 
-<!-- CTA -->
+<!-- CTA ★ 修正：コピー変更 + LINE追加 -->
 <section class="cta-section">
+  <!-- ★ 修正：見出しコピー変更 -->
   <h2 class="reveal">
-    今夜<span class="sm">の</span>夕食<span class="sm">は、</span><br>
-    <span class="accent">パリパリ</span>焼<span class="sm">きそば</span><span class="sm">に</span>決まり。
+    今夜<span class="sm">の</span>夕食<span class="sm">は</span>想夫恋<span class="sm">の</span><br>
+    焼<span class="sm">そば</span><span class="sm">で</span>決<span class="sm">まり</span>！
   </h2>
   <p class="reveal">39年変わらない味が、今夜もお待ちしています。</p>
   <div class="cta-cards reveal">
@@ -1319,6 +1126,21 @@
       <span class="cta-card-label">最新情報</span>
       <span class="cta-card-main">Instagram</span>
       <span class="cta-card-sub">営業カレンダー随時更新</span>
+    </a>
+    <!-- ★ LINE公式カード追加 -->
+    <a href="https://lin.ee/XXXXXXXX" target="_blank" rel="noopener noreferrer" class="cta-card line-card">
+      <span class="cta-card-icon">
+        <!-- LINE SVGアイコン -->
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="32" height="32" rx="8" fill="#06C755"/>
+          <path d="M26 15.16C26 10.65 21.52 7 16 7S6 10.65 6 15.16c0 4.06 3.6 7.46 8.46 8.1.33.07.78.22.89.5.1.26.07.66.03.92l-.14.87c-.04.26-.2 1.02.9.56 1.09-.47 5.89-3.47 8.04-5.94C25.36 18.38 26 16.84 26 15.16z" fill="white"/>
+          <path d="M13.5 13.25H12.75C12.6 13.25 12.5 13.35 12.5 13.5V17.5C12.5 17.65 12.6 17.75 12.75 17.75H13.5C13.65 17.75 13.75 17.65 13.75 17.5V13.5C13.75 13.35 13.65 13.25 13.5 13.25Z" fill="#06C755"/>
+          <path d="M19.25 13.25H18.5C18.35 13.25 18.25 13.35 18.25 13.5V15.9L16.4 13.38C16.37 13.32 16.31 13.27 16.25 13.26H15.5C15.35 13.26 15.25 13.36 15.25 13.51V17.51C15.25 17.66 15.35 17.76 15.5 17.76H16.25C16.4 17.76 16.5 17.66 16.5 17.51V15.11L18.36 17.64C18.39 17.69 18.44 17.73 18.5 17.75H19.25C19.4 17.75 19.5 17.65 19.5 17.5V13.5C19.5 13.35 19.4 13.25 19.25 13.25Z" fill="#06C755"/>
+        </svg>
+      </span>
+      <span class="cta-card-label">公式LINEはこちら</span>
+      <span class="cta-card-main">LINE で友だち追加</span>
+      <span class="cta-card-sub">お得な情報・お知らせ配信</span>
     </a>
   </div>
 </section>
@@ -1357,17 +1179,14 @@
 </footer>
 
 <script>
-  // Nav scroll
   const nav = document.getElementById('nav');
   window.addEventListener('scroll', () => { nav.classList.toggle('scrolled', window.scrollY > 40); });
 
-  // Reveal
   const io = new IntersectionObserver((entries) => {
     entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); } });
   }, { threshold: 0.08, rootMargin: '0px 0px -50px 0px' });
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
-  // Stagger cards
   document.querySelectorAll('.menu-card, .review-card:not(.featured), .takeout-item, .story-stat').forEach((el, i) => {
     el.style.opacity = '0';
     el.style.transform = 'translateY(16px)';

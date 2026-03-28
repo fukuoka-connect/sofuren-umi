@@ -3,6 +3,7 @@
 Fukuoka connect 日次アクセス解析レポート
 毎日朝9時（JST）に自動実行
 FUKUOKA-CONNECT公式LINEからクライアント個別に配信
+クライアントごとに最適化されたAIアドバイス付き
 """
 
 import os
@@ -27,12 +28,35 @@ CLIENTS = [
         "ga4_id":       "529552579",
         "site_url":     "https://fukuoka-connect.github.io/sofuren-umi/",
         "line_user_id": os.environ.get("LINE_USER_ID", ""),
+        "profile": """
+業種：日田焼きそば専門店（テイクアウト専門）
+場所：福岡県粕屋郡宇美町
+営業時間：11:00-15:00 / 17:30-19:30
+定休日：火曜日
+客単価：約1,500円
+強み：パリパリ食感・創業39年の老舗・口コミNo.1
+ターゲット：宇美町の主婦・ファミリー層・地元リピーター
+注文方法：電話のみ 092-933-3991（InstagramのDM不可）
+SNS：Instagram @goto.yakisoba
+LINE公式：友だち436人
+二代目オーナー：後藤堅太郎（広告代理店・農業経験あり）
+人気メニュー：焼きそば並¥1,050・大盛¥1,350・揚げ餃子¥440
+オリジナル：焼きそば専用ふりかけ¥800（宇美店限定）
+        """,
     },
     {
         "name":         "想夫恋 ふりかけLP",
         "ga4_id":       "529527426",
         "site_url":     "https://sofurenumi-glitch.github.io/sofuren-furikake/",
         "line_user_id": os.environ.get("LINE_USER_ID", ""),
+        "profile": """
+業種：焼きそば専用ふりかけ 通販ランディングページ
+商品：想夫恋オリジナルスパイス ¥800
+特徴：花椒・韓国唐辛子・柚子陳皮など本格スパイス
+ターゲット：想夫恋ファン・焼きそば好き・ギフト需要
+CTA：商品詳細ページへの誘導・購入促進
+関連：想夫恋宇美店の店頭でも販売中
+        """,
     },
     # ── 新規クライアント追加例 ──────────────────
     # {
@@ -40,6 +64,13 @@ CLIENTS = [
     #     "ga4_id":       "XXXXXXXXX",
     #     "site_url":     "https://fukuoka-connect.github.io/sera/",
     #     "line_user_id": "Uxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    #     "profile": """
+    # 業種：美容サロン
+    # 場所：福岡県宇美町
+    # 強み：○○
+    # ターゲット：○○
+    # CTA：LINE予約
+    #     """,
     # },
 ]
 
@@ -149,28 +180,45 @@ def get_sc_data(creds, site_url):
         print(f"SC error ({site_url}): {e}")
         return {"keywords": [], "total_clicks": 0, "total_impressions": 0}
 
-# ── Claude AIアドバイス生成 ───────────────────
-def generate_advice(name, ga4, sc):
+# ── Claude AIアドバイス生成（店舗情報最適化）────
+def generate_advice(name, ga4, sc, profile=""):
     client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
     lw_diff = ga4["sessions"] - ga4["sessions_lw"]
     lm_diff = ga4["sessions"] - ga4["sessions_lm"]
     kw_str  = ", ".join([k["query"] for k in sc["keywords"][:3]]) or "なし"
+    weekday = datetime.date.today().strftime("%A")
+    weekday_jp = {
+        "Monday":"月曜日","Tuesday":"火曜日","Wednesday":"水曜日",
+        "Thursday":"木曜日","Friday":"金曜日","Saturday":"土曜日",
+        "Sunday":"日曜日"
+    }.get(weekday, weekday)
 
     msg = client.messages.create(
         model="claude-sonnet-4-20250514",
-        max_tokens=200,
+        max_tokens=250,
         messages=[{"role": "user", "content": f"""
-あなたは飲食店のデジタルマーケティング専門家です。
-「{name}」のデータをもとに、オーナーへの具体的なアドバイスを
-2文以内で生成してください。日本語で親しみやすく、
-今日すぐ実行できる内容にしてください。
+あなたは飲食店専門のデジタルマーケティングアドバイザーです。
 
-セッション: {ga4['sessions']}件（先週比{lw_diff:+d}・先月比{lm_diff:+d}）
+【店舗・サービス情報】
+{profile}
+
+【昨日のアクセスデータ】
+セッション数: {ga4['sessions']}件
+先週比: {lw_diff:+d}件 / 先月比: {lm_diff:+d}件
 直帰率: {ga4['bounce_rate']}%
 電話タップ: {ga4['events'].get('phone_call', 0)}件
 LINEクリック: {ga4['events'].get('line_click', 0)}件
+マップクリック: {ga4['events'].get('map_click', 0)}件
+メニュー表示: {ga4['events'].get('menu_modal_open', 0)}件
 検索クリック: {sc['total_clicks']}件
 TOP検索ワード: {kw_str}
+今日: {weekday_jp}
+
+上記の店舗情報とデータをもとに、
+このお店のオーナーが今日すぐ実行できる
+具体的なアドバイスを2文で生成してください。
+データの数字に言及しつつ、この店舗に特化した
+実践的な内容にしてください。
 """}]
     )
     return msg.content[0].text
@@ -274,7 +322,9 @@ def main():
 
         ga4    = get_ga4_data(creds, client["ga4_id"])
         sc     = get_sc_data(creds, client["site_url"])
-        advice = generate_advice(client["name"], ga4, sc)
+        advice = generate_advice(
+            client["name"], ga4, sc, client.get("profile", "")
+        )
         report = build_report(client["name"], ga4, sc, advice)
 
         print(report)

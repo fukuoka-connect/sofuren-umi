@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
 Fukuoka connect 日次アクセス解析レポート
-毎日朝9時（JST）に自動実行 → LINEに送信
-複数サイト対応版
+毎日朝9時（JST）に自動実行
+FUKUOKA-CONNECT公式LINEからクライアント個別に配信
 """
 
 import os
@@ -17,26 +17,38 @@ from google.analytics.data_v1beta.types import (
 )
 from googleapiclient.discovery import build
 
-# ── クライアント設定（ここを追加するだけで増やせる）──
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# クライアント設定
+# 新規追加時はここにブロックを1つ追加するだけ！
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 CLIENTS = [
     {
-        "name":     "想夫恋 宇美店",
-        "ga4_id":   "529552579",
-        "site_url": "https://fukuoka-connect.github.io/sofuren-umi/",
+        "name":         "想夫恋 宇美店",
+        "ga4_id":       "529552579",
+        "site_url":     "https://fukuoka-connect.github.io/sofuren-umi/",
+        "line_user_id": os.environ.get("LINE_USER_ID", ""),
     },
     {
-        "name":     "想夫恋 ふりかけLP",
-        "ga4_id":   "529527426",
-        "site_url": "https://sofurenumi-glitch.github.io/sofuren-furikake/",
+        "name":         "想夫恋 ふりかけLP",
+        "ga4_id":       "529527426",
+        "site_url":     "https://sofurenumi-glitch.github.io/sofuren-furikake/",
+        "line_user_id": os.environ.get("LINE_USER_ID", ""),
     },
+    # ── 新規クライアント追加例 ──────────────────
+    # {
+    #     "name":         "セラ",
+    #     "ga4_id":       "XXXXXXXXX",
+    #     "site_url":     "https://fukuoka-connect.github.io/sera/",
+    #     "line_user_id": "Uxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    # },
 ]
 
+# ── 環境変数 ──────────────────────────────────
 LINE_TOKEN        = os.environ["LINE_CHANNEL_ACCESS_TOKEN"]
-LINE_USER_ID      = os.environ["LINE_USER_ID"]
 ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
 GCP_KEY_JSON      = os.environ["GCP_SERVICE_ACCOUNT_KEY"]
 
-# ── Google認証 ────────────────────────────────────
+# ── Google認証 ────────────────────────────────
 def get_credentials():
     key_dict = json.loads(GCP_KEY_JSON)
     scopes = [
@@ -47,7 +59,7 @@ def get_credentials():
         key_dict, scopes=scopes
     )
 
-# ── GA4データ取得 ─────────────────────────────────
+# ── GA4データ取得 ─────────────────────────────
 def get_ga4_data(creds, ga4_id):
     client = BetaAnalyticsDataClient(credentials=creds)
     today     = datetime.date.today()
@@ -71,8 +83,8 @@ def get_ga4_data(creds, ga4_id):
 
     r_day = report(yesterday, yesterday,
         ["sessions","totalUsers","bounceRate","screenPageViews"])
-    r_lw  = report(week_ago,  week_ago,  ["sessions","totalUsers"])
-    r_lm  = report(month_ago, month_ago, ["sessions","totalUsers"])
+    r_lw  = report(week_ago,  week_ago,  ["sessions"])
+    r_lm  = report(month_ago, month_ago, ["sessions"])
     r_ev  = report(yesterday, yesterday, ["eventCount"], ["eventName"])
     r_ch  = report(yesterday, yesterday, ["sessions"],
         ["sessionDefaultChannelGroup"])
@@ -99,7 +111,7 @@ def get_ga4_data(creds, ga4_id):
         "channels":    channels,
     }
 
-# ── Search Console データ取得 ─────────────────────
+# ── Search Console データ取得 ─────────────────
 def get_sc_data(creds, site_url):
     svc = build("searchconsole", "v1", credentials=creds)
     today = datetime.date.today()
@@ -134,10 +146,10 @@ def get_sc_data(creds, site_url):
                 "total_clicks": total_clicks,
                 "total_impressions": total_imp}
     except Exception as e:
-        print(f"SC error: {e}")
+        print(f"SC error ({site_url}): {e}")
         return {"keywords": [], "total_clicks": 0, "total_impressions": 0}
 
-# ── Claude AIアドバイス生成 ───────────────────────
+# ── Claude AIアドバイス生成 ───────────────────
 def generate_advice(name, ga4, sc):
     client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
     lw_diff = ga4["sessions"] - ga4["sessions_lw"]
@@ -149,8 +161,8 @@ def generate_advice(name, ga4, sc):
         max_tokens=200,
         messages=[{"role": "user", "content": f"""
 あなたは飲食店のデジタルマーケティング専門家です。
-以下の「{name}」のデータをもとに、オーナーへの具体的なアドバイスを
-2文以内で生成してください。日本語で、親しみやすく、
+「{name}」のデータをもとに、オーナーへの具体的なアドバイスを
+2文以内で生成してください。日本語で親しみやすく、
 今日すぐ実行できる内容にしてください。
 
 セッション: {ga4['sessions']}件（先週比{lw_diff:+d}・先月比{lm_diff:+d}）
@@ -163,7 +175,7 @@ TOP検索ワード: {kw_str}
     )
     return msg.content[0].text
 
-# ── レポート文章生成 ──────────────────────────────
+# ── レポート文章生成 ──────────────────────────
 def build_report(name, ga4, sc, advice):
     lw_diff = ga4["sessions"] - ga4["sessions_lw"]
     lm_diff = ga4["sessions"] - ga4["sessions_lm"]
@@ -181,6 +193,8 @@ def build_report(name, ga4, sc, advice):
         ga4["channels"].items(), key=lambda x: x[1], reverse=True
     )[:4]:
         ch_lines += f"  {ch_map.get(ch, ch)}: {cnt}件\n"
+    if not ch_lines:
+        ch_lines = "  （データなし）\n"
 
     kw_lines = ""
     for i, kw in enumerate(sc["keywords"][:3], 1):
@@ -228,37 +242,45 @@ LINEクリック: {ga4['events'].get('line_click', 0)}件
 
 Powered by Fukuoka connect"""
 
-# ── LINE送信 ─────────────────────────────────────
-def send_line(message):
+# ── LINE送信（クライアント個別）────────────────
+def send_line(user_id, message):
     res = requests.post(
         "https://api.line.me/v2/bot/message/push",
         headers={
             "Content-Type": "application/json",
             "Authorization": f"Bearer {LINE_TOKEN}",
         },
-        json={"to": LINE_USER_ID,
-              "messages": [{"type": "text", "text": message}]},
+        json={
+            "to": user_id,
+            "messages": [{"type": "text", "text": message}]
+        },
         timeout=10,
     )
-    print(f"LINE送信: {res.status_code}")
+    print(f"LINE送信 → {user_id[:8]}...: {res.status_code}")
     if res.status_code != 200:
         print(res.text)
 
-# ── メイン ───────────────────────────────────────
+# ── メイン ───────────────────────────────────
 def main():
-    print("レポート生成開始...")
+    print("=== Fukuoka connect 日次レポート開始 ===")
     creds = get_credentials()
 
     for client in CLIENTS:
         print(f"\n--- {client['name']} ---")
+
+        if not client.get("line_user_id"):
+            print("LINE_USER_IDが未設定のためスキップ")
+            continue
+
         ga4    = get_ga4_data(creds, client["ga4_id"])
         sc     = get_sc_data(creds, client["site_url"])
         advice = generate_advice(client["name"], ga4, sc)
         report = build_report(client["name"], ga4, sc, advice)
-        print(report)
-        send_line(report)
 
-    print("\n全クライアント完了！")
+        print(report)
+        send_line(client["line_user_id"], report)
+
+    print("\n=== 全クライアント完了 ===")
 
 if __name__ == "__main__":
     main()

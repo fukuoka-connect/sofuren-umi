@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-想夫恋 宇美店 日次アクセス解析レポート
+Fukuoka connect 日次アクセス解析レポート
 毎日朝9時（JST）に自動実行 → LINEに送信
+複数サイト対応版
 """
 
 import os
@@ -16,13 +17,24 @@ from google.analytics.data_v1beta.types import (
 )
 from googleapiclient.discovery import build
 
-# ── 設定 ──────────────────────────────────────────
-GA4_PROPERTY_ID    = "529552579"
-SITE_URL           = "https://fukuoka-connect.github.io/sofuren-umi/"
-LINE_TOKEN         = os.environ["LINE_CHANNEL_ACCESS_TOKEN"]
-LINE_USER_ID       = os.environ["LINE_USER_ID"]
-ANTHROPIC_API_KEY  = os.environ["ANTHROPIC_API_KEY"]
-GCP_KEY_JSON       = os.environ["GCP_SERVICE_ACCOUNT_KEY"]
+# ── クライアント設定（ここを追加するだけで増やせる）──
+CLIENTS = [
+    {
+        "name":     "想夫恋 宇美店",
+        "ga4_id":   "529552579",
+        "site_url": "https://fukuoka-connect.github.io/sofuren-umi/",
+    },
+    {
+        "name":     "想夫恋 ふりかけLP",
+        "ga4_id":   "529527426",
+        "site_url": "https://sofurenumi-glitch.github.io/sofuren-furikake/",
+    },
+]
+
+LINE_TOKEN        = os.environ["LINE_CHANNEL_ACCESS_TOKEN"]
+LINE_USER_ID      = os.environ["LINE_USER_ID"]
+ANTHROPIC_API_KEY = os.environ["ANTHROPIC_API_KEY"]
+GCP_KEY_JSON      = os.environ["GCP_SERVICE_ACCOUNT_KEY"]
 
 # ── Google認証 ────────────────────────────────────
 def get_credentials():
@@ -36,7 +48,7 @@ def get_credentials():
     )
 
 # ── GA4データ取得 ─────────────────────────────────
-def get_ga4_data(creds):
+def get_ga4_data(creds, ga4_id):
     client = BetaAnalyticsDataClient(credentials=creds)
     today     = datetime.date.today()
     yesterday = today - datetime.timedelta(days=1)
@@ -45,7 +57,7 @@ def get_ga4_data(creds):
 
     def report(start, end, metrics, dims=None):
         return client.run_report(RunReportRequest(
-            property=f"properties/{GA4_PROPERTY_ID}",
+            property=f"properties/{ga4_id}",
             dimensions=[Dimension(name=d) for d in (dims or [])],
             metrics=[Metric(name=m) for m in metrics],
             date_ranges=[DateRange(
@@ -88,14 +100,14 @@ def get_ga4_data(creds):
     }
 
 # ── Search Console データ取得 ─────────────────────
-def get_sc_data(creds):
+def get_sc_data(creds, site_url):
     svc = build("searchconsole", "v1", credentials=creds)
     today = datetime.date.today()
     end   = today - datetime.timedelta(days=3)
     start = end   - datetime.timedelta(days=7)
     try:
         res = svc.searchanalytics().query(
-            siteUrl=SITE_URL,
+            siteUrl=site_url,
             body={
                 "startDate": str(start),
                 "endDate":   str(end),
@@ -126,7 +138,7 @@ def get_sc_data(creds):
         return {"keywords": [], "total_clicks": 0, "total_impressions": 0}
 
 # ── Claude AIアドバイス生成 ───────────────────────
-def generate_advice(ga4, sc):
+def generate_advice(name, ga4, sc):
     client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
     lw_diff = ga4["sessions"] - ga4["sessions_lw"]
     lm_diff = ga4["sessions"] - ga4["sessions_lm"]
@@ -137,15 +149,14 @@ def generate_advice(ga4, sc):
         max_tokens=200,
         messages=[{"role": "user", "content": f"""
 あなたは飲食店のデジタルマーケティング専門家です。
-以下のデータをもとに、想夫恋 宇美店（日田焼きそば専門店）の
-オーナーへの具体的なアドバイスを2文以内で生成してください。
-日本語で、親しみやすく、今日すぐ実行できる内容にしてください。
+以下の「{name}」のデータをもとに、オーナーへの具体的なアドバイスを
+2文以内で生成してください。日本語で、親しみやすく、
+今日すぐ実行できる内容にしてください。
 
 セッション: {ga4['sessions']}件（先週比{lw_diff:+d}・先月比{lm_diff:+d}）
 直帰率: {ga4['bounce_rate']}%
 電話タップ: {ga4['events'].get('phone_call', 0)}件
 LINEクリック: {ga4['events'].get('line_click', 0)}件
-マップクリック: {ga4['events'].get('map_click', 0)}件
 検索クリック: {sc['total_clicks']}件
 TOP検索ワード: {kw_str}
 """}]
@@ -153,7 +164,7 @@ TOP検索ワード: {kw_str}
     return msg.content[0].text
 
 # ── レポート文章生成 ──────────────────────────────
-def build_report(ga4, sc, advice):
+def build_report(name, ga4, sc, advice):
     lw_diff = ga4["sessions"] - ga4["sessions_lw"]
     lm_diff = ga4["sessions"] - ga4["sessions_lm"]
     lw_icon = "↑" if lw_diff >= 0 else "↓"
@@ -181,7 +192,7 @@ def build_report(ga4, sc, advice):
     if not kw_lines:
         kw_lines = "  （データ集計中）\n"
 
-    return f"""📊 想夫恋 宇美店
+    return f"""📊 {name}
 アクセスレポート {ga4['date']}
 
 ━━━━━━━━━━━━━
@@ -236,14 +247,18 @@ def send_line(message):
 # ── メイン ───────────────────────────────────────
 def main():
     print("レポート生成開始...")
-    creds  = get_credentials()
-    ga4    = get_ga4_data(creds)
-    sc     = get_sc_data(creds)
-    advice = generate_advice(ga4, sc)
-    report = build_report(ga4, sc, advice)
-    print(report)
-    send_line(report)
-    print("完了！")
+    creds = get_credentials()
+
+    for client in CLIENTS:
+        print(f"\n--- {client['name']} ---")
+        ga4    = get_ga4_data(creds, client["ga4_id"])
+        sc     = get_sc_data(creds, client["site_url"])
+        advice = generate_advice(client["name"], ga4, sc)
+        report = build_report(client["name"], ga4, sc, advice)
+        print(report)
+        send_line(report)
+
+    print("\n全クライアント完了！")
 
 if __name__ == "__main__":
     main()

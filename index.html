@@ -1359,10 +1359,29 @@
           <p class="time-label">定休日</p>
           <p class="time-value">木曜日＋不定休</p>
         </div>
-        <div style="margin:18px 0 10px;text-align:center;">
+        <div id="cal-wrap" style="margin:18px 0 10px;text-align:center;">
           <p style="font-size:0.95rem;font-weight:600;margin-bottom:8px;color:#d4a04a;">営業カレンダー</p>
-          <iframe src="https://calendar.google.com/calendar/embed?src=aeb0d37e4e0c184ea2d985b43199628f420939f0e70f6d7ecd3ac2db17cefccb%40group.calendar.google.com&ctz=Asia%2FTokyo" style="border:0;border-radius:8px;width:100%;max-width:800px;height:450px;" frameborder="0" scrolling="no"></iframe>
+          <iframe id="cal-iframe" src="https://calendar.google.com/calendar/embed?src=aeb0d37e4e0c184ea2d985b43199628f420939f0e70f6d7ecd3ac2db17cefccb%40group.calendar.google.com&ctz=Asia%2FTokyo" style="border:0;border-radius:8px;width:100%;max-width:800px;height:450px;" frameborder="0" scrolling="no"></iframe>
+          <div id="cal-fallback" style="display:none;padding:28px 16px;background:rgba(212,160,74,.06);border:1px solid rgba(212,160,74,.15);border-radius:8px;">
+            <p style="font-size:.85rem;color:#e8dcc8;margin-bottom:14px;line-height:1.7;">アプリ内ブラウザでは<br>カレンダーを表示できません</p>
+            <a href="https://calendar.google.com/calendar/embed?src=aeb0d37e4e0c184ea2d985b43199628f420939f0e70f6d7ecd3ac2db17cefccb%40group.calendar.google.com&ctz=Asia%2FTokyo" target="_blank" rel="noopener" style="display:inline-block;padding:12px 28px;background:#d4a04a;color:#1a1410;font-size:.9rem;font-weight:700;border-radius:8px;text-decoration:none;letter-spacing:.05em;">営業カレンダーを見る</a>
+          </div>
         </div>
+        <script>
+        (function(){
+          var iframe=document.getElementById('cal-iframe');
+          var fallback=document.getElementById('cal-fallback');
+          var ua=navigator.userAgent||'';
+          var isInApp=/Instagram|FBAN|FBAV|Line\/|Twitter/i.test(ua);
+          if(isInApp){
+            iframe.style.display='none';
+            fallback.style.display='block';
+          } else {
+            var timer=setTimeout(function(){iframe.style.display='none';fallback.style.display='block';},5000);
+            iframe.addEventListener('load',function(){clearTimeout(timer);});
+          }
+        })();
+        </script>
         <div class="order-note">
           ※ ご注文はお電話にてお願いします。<br>
           インスタDMでは受け付けておりません。<br>

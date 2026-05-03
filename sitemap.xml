@@ -13,6 +13,24 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://fukuoka-connect.github.io/sofuren-umi/umi-lunch/</loc>
+    <lastmod>2026-05-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://fukuoka-connect.github.io/sofuren-umi/dazaifu-lunch/</loc>
+    <lastmod>2026-05-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://fukuoka-connect.github.io/sofuren-umi/umi-hachiman-lunch/</loc>
+    <lastmod>2026-05-03</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://fukuoka-connect.github.io/sofuren-umi/news/</loc>
     <lastmod>2026-05-03</lastmod>
     <changefreq>monthly</changefreq>

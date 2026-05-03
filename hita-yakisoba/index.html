@@ -195,6 +195,16 @@
       letter-spacing:0.1em;margin-top:8px;
     }
 
+    /* Related */
+    .related{max-width:760px;margin:64px auto 0;padding:0 24px}
+    .related-ttl{font-family:'Noto Serif JP',serif;font-size:0.78rem;letter-spacing:0.32em;color:var(--brown);text-align:center;margin-bottom:20px}
+    .related-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+    .related-grid a{display:block;padding:20px;background:#fff;border:1px solid var(--border);border-radius:8px;text-decoration:none;color:inherit;transition:.22s cubic-bezier(.25,.46,.45,.94)}
+    .related-grid a:hover{border-color:var(--brown-lt);transform:translateY(-2px)}
+    .related-grid .lbl{font-size:0.68rem;color:var(--red);letter-spacing:0.18em;margin-bottom:6px}
+    .related-grid .ttl-r{font-family:'Noto Serif JP',serif;font-weight:700;font-size:1rem;color:var(--ink);line-height:1.5;margin-bottom:6px}
+    .related-grid .desc{font-size:0.82rem;color:var(--text-mid);line-height:1.7}
+
     /* CTA */
     .cta-block{
       max-width:760px;margin:64px auto 0;padding:48px 28px;
@@ -357,6 +367,27 @@
 
 </article>
 
+<section class="related">
+  <p class="related-ttl">RELATED CONTENTS</p>
+  <div class="related-grid">
+    <a href="../umi-lunch/">
+      <div class="lbl">GUIDE</div>
+      <div class="ttl-r">宇美町<span class="sm">の</span>ランチおすすめ</div>
+      <div class="desc">地元民が通う一軒として選ばれている理由、利用シーン別のおすすめポイント。</div>
+    </a>
+    <a href="../dazaifu-lunch/">
+      <div class="lbl">GUIDE</div>
+      <div class="ttl-r">太宰府帰<span class="sm">りの</span>ランチ<span class="sm">に</span></div>
+      <div class="desc">参拝のあと、混雑を避けて車で15分。宇美八幡宮との合わせ参拝ルートも。</div>
+    </a>
+    <a href="../umi-hachiman-lunch/">
+      <div class="lbl">GUIDE</div>
+      <div class="ttl-r">宇美八幡宮<span class="sm">の</span>安産祈願後<span class="sm">に</span></div>
+      <div class="desc">妊婦さんやご家族でのランチに。八幡宮から車で5分。テイクアウト情報も。</div>
+    </a>
+  </div>
+</section>
+
 <div class="cta-block" style="max-width:760px;margin:64px auto 0;">
   <h2>本場の日田焼きそばを<br>味わいに来ませんか？</h2>
   <p>テイクアウトのご注文はお電話で。<br>営業日はLINEでお知らせしています。</p>
@@ -365,7 +396,7 @@
 </div>
 
 <footer>
-  © 2026 想夫恋 宇美店 ／ <a href="../">トップ</a> ／ <a href="../news/">お知らせ</a>
+  © 2026 想夫恋 宇美店 ／ <a href="../">トップ</a> ／ <a href="../news/">お知らせ</a> ／ <a href="../umi-lunch/">宇美町ランチ</a> ／ <a href="../dazaifu-lunch/">太宰府帰りのランチ</a> ／ <a href="../umi-hachiman-lunch/">安産祈願後ランチ</a>
 </footer>
 
 </body>

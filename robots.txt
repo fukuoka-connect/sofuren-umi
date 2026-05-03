@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://fukuoka-connect.github.io/sofuren-umi/sitemap.xml

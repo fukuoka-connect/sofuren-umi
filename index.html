@@ -392,13 +392,14 @@
     .btn-ghost:hover { background: rgba(120,88,52,0.06); border-color: var(--brown); color: var(--brown-deep); }
     .btn-line {
       display: inline-flex; align-items: center;
-      background: var(--line-green); color: #fff;
-      padding: 16px 28px; border-radius: 3px;
+      background: transparent; color: var(--line-green);
+      border: 1px solid var(--line-green);
+      padding: 15px 26px; border-radius: 3px;
       font-size: 0.88rem; letter-spacing: 0.08em;
       text-decoration: none; font-weight: 500;
-      transition: all 0.3s; box-shadow: 0 4px 20px rgba(6,199,85,0.35);
+      transition: all 0.3s;
     }
-    .btn-line:hover { background: #05B04C; box-shadow: 0 8px 32px rgba(6,199,85,0.45); transform: translateY(-1px); }
+    .btn-line:hover { background: rgba(6,199,85,0.08); border-color: #05B04C; color: #05B04C; transform: translateY(-1px); }
     .hero-right {
       position: relative; display: flex;
       align-items: center; justify-content: center; overflow: hidden;
@@ -435,7 +436,7 @@
     }
     .hero-float-1 { top: 18%; left: 4%; animation: floatIn 0.7s 1.3s ease forwards; }
     .hero-float-2 { bottom: 16%; right: 2%; animation: floatIn 0.7s 1.5s ease forwards; }
-    .hero-float-stars { color: #E8B84A; font-size: 0.7rem; margin-bottom: 4px; }
+    .hero-float-stars { color: var(--red); font-size: 0.62rem; font-weight: 700; letter-spacing: 0.18em; margin-bottom: 6px; }
     .hero-float-text { font-size: 0.72rem; line-height: 1.6; color: var(--text-mid); }
     .hero-float-text em { color: var(--red-lt); font-style: normal; font-weight: 700; }
     .hero-scroll {
@@ -492,6 +493,11 @@
     .strip-item { display: flex; align-items: center; gap: 14px; white-space: nowrap; }
     .strip-num { font-family: 'Noto Serif JP', serif; font-size: 1.5rem; font-weight: 700; color: var(--cream); }
     .strip-label { font-size: 0.68rem; letter-spacing: 0.15em; color: rgba(254,252,248,0.65); line-height: 1.6; }
+    .strip-item.is-key { gap: 18px; }
+    .strip-item.is-key .strip-num { font-size: 2.15rem; font-weight: 900; color: #fff; letter-spacing: 0.02em; }
+    .strip-item.is-key .strip-label { font-size: 0.74rem; color: rgba(254,252,248,0.85); font-weight: 600; }
+    .strip-item.is-sub .strip-num { font-size: 1.15rem; opacity: 0.72; }
+    .strip-item.is-sub .strip-label { font-size: 0.62rem; opacity: 0.7; }
     .strip-div { width: 1px; height: 36px; background: rgba(254,252,248,0.25); }
 
     /* ━━━━━━━━━━━━━━━━━━━━━━
@@ -1159,7 +1165,7 @@
     <li><a href="#takeout">テイクアウト</a></li>
     <li><a href="#access">アクセス</a></li>
     <li><a href="#news">お知らせ</a></li>
-    <li><a href="#" class="nav-menu-btn" onclick="openMenuModal(event)">📋 メニュー表</a></li>
+    <li><a href="#menu" class="nav-menu-btn" onclick="openMenuModal(event)">📋 メニュー表</a></li>
     <li><a href="tel:0929333991" class="nav-cta">📞 テイクアウト注文</a></li>
   </ul>
 </nav>
@@ -1195,7 +1201,7 @@
         </svg>
         LINE で営業日確認
       </a>
-      <a href="#" class="btn-ghost" onclick="openMenuModal(event)">📋 メニューを見る</a>
+      <a href="#menu" class="btn-ghost" onclick="openMenuModal(event)">📋 メニューを見る</a>
     </div>
   </div>
 
@@ -1204,12 +1210,12 @@
          alt="想夫恋宇美店 パリパリ日田焼きそばを箸で持ち上げる"
          style="width:100%;height:100%;object-fit:cover;display:block;">
     <div class="hero-float hero-float-1">
-      <p class="hero-float-stars">★★★★★</p>
+      <p class="hero-float-stars">お客様の声</p>
       <p class="hero-float-text"><em>「宇美店が一番旨い」</em><br>— Googleレビューより</p>
     </div>
     <div class="hero-float hero-float-2">
-      <p class="hero-float-stars">★★★★★</p>
-      <p class="hero-float-text"><em>「パリパリ食感、本店で感動した味はここだけ」</em></p>
+      <p class="hero-float-stars">お客様の声</p>
+      <p class="hero-float-text"><em>「パリパリ食感、本店で感動した味はここだけ」</em><br>— Googleレビューより</p>
     </div>
   </div>
 
@@ -1234,22 +1240,22 @@
 
 <!-- STRIP -->
 <div class="strip">
-  <div class="strip-item">
+  <div class="strip-item is-key">
     <span class="strip-num">39</span>
     <span class="strip-label">年の<br>老舗</span>
   </div>
   <div class="strip-div"></div>
-  <div class="strip-item">
+  <div class="strip-item is-sub">
     <span class="strip-num">No.1</span>
     <span class="strip-label">口コミで「宇美店が<br>一番旨い」と評判</span>
   </div>
   <div class="strip-div"></div>
-  <div class="strip-item">
+  <div class="strip-item is-key">
     <span class="strip-num">発祥</span>
     <span class="strip-label">日田焼きそば<br>発祥の店</span>
   </div>
   <div class="strip-div"></div>
-  <div class="strip-item">
+  <div class="strip-item is-sub">
     <span class="strip-num">2代目</span>
     <span class="strip-label">親から受け継いだ<br>味を守る</span>
   </div>

@@ -1,0 +1,2513 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>カリカリダッシュ｜焼きそばヒーローの8bitアクション - 想夫恋 宇美店</title>
+<meta name="description" content="焼きそばヒーロー「めんたろう」が鉄板を駆け抜けるレトロゲーム風横スクロールアクション。ハイスコアを達成すると「お会計から50円引き」クーポンをプレゼント！創業39年・日田焼きそば専門店 想夫恋 宇美店。">
+<link rel="canonical" href="https://fukuoka-connect.github.io/sofuren-umi/game/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="カリカリダッシュ 〜走れ！めんたろう〜｜想夫恋 宇美店">
+<meta property="og:description" content="焼きそばヒーローの8bit風アクションゲーム。ハイスコア達成で「お会計から50円引き」クーポン！">
+<meta property="og:url" content="https://fukuoka-connect.github.io/sofuren-umi/game/">
+<meta property="og:image" content="https://fukuoka-connect.github.io/sofuren-umi/images/hero-right.jpg">
+<meta property="og:site_name" content="想夫恋 宇美店">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+
+<!-- GA4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TME6YMLRPS"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  /* テストモード（?autotest=1 / ?screen=）ではpage_viewも送信しない */
+  var gaCfg = { page_title: 'カリカリダッシュ v2' };
+  try {
+    var gaQ = new URLSearchParams(location.search);
+    if (gaQ.get('autotest') === '1' || gaQ.get('screen')) gaCfg.send_page_view = false;
+  } catch(e){}
+  gtag('config', 'G-TME6YMLRPS', gaCfg);
+</script>
+
+<style>
+:root{
+  --bg:#140a05; --panel:#241208; --panel2:#2e1a0c;
+  --acc:#e45c10; --acc2:#f8b800; --txt:#f5e8d8; --sub:#c9a98c;
+  --red:#d82800; --line:#4a2c14;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html{touch-action:manipulation;}
+body{
+  background:var(--bg); color:var(--txt);
+  font-family:'DotGothic16','Hiragino Kaku Gothic ProN',monospace;
+  line-height:1.7; min-height:100vh;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  overscroll-behavior:none;
+}
+a{color:var(--acc2);text-decoration:none;}
+button{font-family:inherit;cursor:pointer;border:none;border-radius:0;}
+#app{max-width:560px;margin:0 auto;padding-bottom:24px;}
+
+/* ── header ── */
+.top-bar{display:flex;align-items:center;justify-content:space-between;padding:8px 12px 4px;}
+.top-brand{font-size:12px;color:var(--sub);letter-spacing:.08em;}
+.top-brand strong{color:var(--txt);}
+#btnMute{background:var(--panel);color:var(--txt);border:2px solid var(--line);
+  font-size:16px;line-height:1;padding:8px 10px;min-width:44px;min-height:40px;position:relative;}
+/* 見た目は維持しつつタップ判定を44px以上に拡大（40px+上下4px=48px） */
+#btnMute::after{content:"";position:absolute;left:-4px;right:-4px;top:-4px;bottom:-4px;}
+
+/* ── HUD ── */
+#hud{display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:6px 12px;font-size:13px;min-height:38px;}
+#hudScore{font-size:16px;color:var(--acc2);min-width:84px;letter-spacing:.04em;}
+#hudItems{display:flex;gap:4px;}
+.hud-slot{width:24px;height:24px;background:#1c0f07;border:2px solid var(--line);
+  display:flex;align-items:center;justify-content:center;}
+.hud-slot img{width:16px;height:16px;image-rendering:pixelated;opacity:.22;filter:grayscale(1);}
+.hud-slot.lit img{opacity:1;filter:none;}
+.hud-slot.lit{border-color:var(--acc);background:#33190a;}
+#hudBest{font-size:11px;color:var(--sub);text-align:right;line-height:1.3;}
+
+/* ── stage ── */
+#stage{position:relative;display:flex;justify-content:center;background:#000;
+  user-select:none;-webkit-user-select:none;touch-action:manipulation;}
+#cv{display:block;image-rendering:pixelated;image-rendering:crisp-edges;background:#301850;}
+.scanlines{position:absolute;inset:0;pointer-events:none;z-index:3;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,.13) 0 1px,transparent 1px 3px);}
+.ovl{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;pointer-events:none;z-index:4;}
+#ovlTitle .logo{
+  font-size:clamp(26px,8.4vw,40px);font-weight:700;color:var(--acc2);line-height:1.15;
+  text-shadow:2px 2px 0 #7c2d00,4px 4px 0 #000;letter-spacing:.02em;
+  transform:rotate(-2deg);}
+#ovlTitle .logo-sub{font-size:13px;color:#ffe9c9;margin-top:4px;
+  text-shadow:1px 1px 0 #000,2px 2px 0 #000;}
+#ovlTitle .tap{margin-top:14px;font-size:15px;color:#fff;text-shadow:1px 1px 0 #000;
+  animation:blink 1s steps(2,start) infinite;}
+@keyframes blink{50%{opacity:0;}}
+#ovlGo{font-size:30px;color:var(--acc2);text-shadow:2px 2px 0 #000;opacity:0;}
+#ovlGo.show{animation:goPop .9s steps(4) forwards;}
+@keyframes goPop{0%{opacity:1;transform:scale(.6);}60%{opacity:1;transform:scale(1.15);}100%{opacity:0;transform:scale(1.2);}}
+#ovlBanner{font-size:20px;color:#fff;text-shadow:2px 2px 0 var(--red),3px 3px 0 #000;opacity:0;}
+#ovlBanner.show{animation:bannerPop 1.6s steps(6) forwards;}
+@keyframes bannerPop{0%{opacity:0;transform:translateY(10px);}15%{opacity:1;transform:translateY(0);}80%{opacity:1;}100%{opacity:0;}}
+#ovlGameover{font-size:28px;color:#fff;text-shadow:2px 2px 0 var(--red),4px 4px 0 #000;
+  letter-spacing:.1em;opacity:0;}
+#ovlGameover.show{opacity:1;animation:blink 1.1s steps(2,start) infinite;}
+
+/* ── panels ── */
+.panel{padding:14px 14px 8px;}
+.howto{background:var(--panel);border:2px solid var(--line);padding:10px 12px;font-size:13px;color:var(--txt);}
+.howto p{display:flex;gap:8px;align-items:flex-start;}
+.howto .ico{flex:0 0 auto;}
+.note-all{margin-top:10px;background:#33190a;border:2px solid var(--acc);
+  padding:10px 12px;font-size:13px;color:#ffe9c9;text-align:center;}
+.note-all strong{color:var(--acc2);font-size:15px;}
+.best-line{margin-top:10px;font-size:13px;color:var(--sub);text-align:center;}
+.best-line em{font-style:normal;color:var(--acc2);}
+.shop-mini{margin-top:12px;text-align:center;font-size:12px;color:var(--sub);}
+.shop-mini a{display:inline-block;padding:10px 14px;min-height:44px;line-height:24px;}
+
+/* ── buttons ── */
+.btn{display:block;width:100%;text-align:center;font-size:17px;padding:14px 12px;min-height:52px;
+  color:#fff;background:var(--acc);box-shadow:0 4px 0 #7c2d00,0 6px 0 rgba(0,0,0,.5);
+  margin-top:14px;letter-spacing:.04em;}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #7c2d00;}
+.btn-big{font-size:20px;padding:18px 12px;min-height:60px;}
+.btn-ghost{background:var(--panel);color:var(--txt);border:2px solid var(--line);
+  box-shadow:0 4px 0 #000;font-size:15px;}
+.btn-coupon{background:#8c5a00;box-shadow:0 4px 0 #4a2f00,0 6px 0 rgba(0,0,0,.5);}
+
+/* ── result ── */
+#panelResult .res-head{text-align:center;margin-top:4px;}
+.res-label{font-size:12px;color:var(--sub);letter-spacing:.2em;}
+#resNum{font-size:44px;color:var(--acc2);line-height:1.1;text-shadow:2px 2px 0 #7c2d00;}
+.res-unit{font-size:14px;color:var(--sub);}
+#rankReveal{margin-top:10px;text-align:center;opacity:0;transform:scale(.6);}
+#rankReveal.show{transition:transform .25s steps(4),opacity .25s steps(4);opacity:1;transform:scale(1);}
+.rank-label{font-size:12px;color:var(--sub);letter-spacing:.3em;}
+#rankName{font-size:34px;line-height:1.2;text-shadow:2px 2px 0 #000;}
+#rankName.t1{color:#c9c9c9;}#rankName.t2{color:#7ddb50;}#rankName.t3{color:#4ab8ff;}
+#rankName.t4{color:#f8b800;}#rankName.t5{color:#ff5a8c;}
+#rankWord{font-size:13px;color:var(--txt);margin-top:4px;}
+#resBests{margin-top:10px;font-size:12px;color:var(--sub);text-align:center;line-height:1.6;}
+#resBests em{font-style:normal;color:var(--acc2);}
+.newrec{display:inline-block;color:#fff;background:var(--red);font-size:11px;padding:1px 6px;margin-left:4px;}
+
+/* ── CTA ── */
+.cta{margin-top:26px;border-top:2px dashed var(--line);padding-top:18px;text-align:center;}
+.cta-copy{font-size:18px;color:var(--txt);text-shadow:1px 1px 0 #000;}
+.cta-copy span{color:var(--acc2);}
+.cta img{width:100%;max-width:420px;margin:12px auto 0;display:block;border:2px solid var(--line);}
+.btn-tel{display:flex;align-items:center;justify-content:center;gap:8px;
+  width:100%;min-height:56px;margin-top:14px;font-size:19px;color:#fff;
+  background:var(--red);box-shadow:0 4px 0 #6e1400,0 6px 0 rgba(0,0,0,.5);}
+.btn-tel:active{transform:translateY(3px);box-shadow:0 1px 0 #6e1400;}
+.cta-hours{margin-top:10px;font-size:12px;color:var(--sub);line-height:1.7;}
+.cta-top{display:inline-block;margin-top:12px;padding:12px 18px;min-height:44px;
+  font-size:14px;color:var(--acc2);border:2px solid var(--line);background:var(--panel);}
+
+/* ── footer / seo ── */
+.seo-foot{padding:20px 16px 8px;font-size:11px;color:#8a6a50;line-height:1.9;}
+.copy-foot{text-align:center;font-size:11px;color:#6e523c;padding:10px 0 4px;}
+
+/* ── coupon ── */
+#scrCoupon{position:fixed;inset:0;z-index:50;background:var(--bg);overflow-y:auto;
+  -webkit-overflow-scrolling:touch;display:none;}
+#scrCoupon.show{display:block;}
+.cp-wrap{max-width:560px;margin:0 auto;padding:16px 14px 32px;}
+.cp-card{position:relative;overflow:hidden;background:#f8efe2;color:#3c2410;
+  border:3px dashed #b86a28;padding:18px 14px 16px;}
+.cp-wm{position:absolute;inset:-30%;display:flex;flex-direction:column;justify-content:space-around;
+  pointer-events:none;transform:rotate(-18deg);z-index:0;}
+.cp-wm span{font-size:46px;font-weight:700;color:rgba(200,80,16,.13);white-space:nowrap;letter-spacing:.1em;}
+.cp-in{position:relative;z-index:1;text-align:center;}
+.cp-shop{font-size:13px;letter-spacing:.2em;color:#7c4a1c;}
+.cp-game{font-size:11px;color:#a06a34;margin-top:2px;}
+.cp-amount{font-size:40px;line-height:1.15;color:#b83000;margin-top:10px;text-shadow:1px 1px 0 #f3d9b8;}
+.cp-amount small{font-size:16px;color:#7c4a1c;}
+.cp-all{margin-top:6px;font-size:13px;color:#3c2410;background:#f3dfc2;display:inline-block;padding:3px 10px;}
+.cp-flame{font-size:30px;display:inline-block;margin-top:10px;
+  animation:flame .7s ease-in-out infinite alternate;}
+@keyframes flame{0%{transform:scale(1) rotate(-6deg);filter:brightness(1);}
+  50%{transform:scale(1.18) rotate(3deg) translateY(-2px);filter:brightness(1.25);}
+  100%{transform:scale(.95) rotate(7deg);filter:brightness(.95);}}
+.cp-flame-note{font-size:11px;color:#8c5a28;margin-top:2px;}
+.cp-badge{display:inline-block;margin-top:10px;font-size:13px;padding:4px 14px;background:#fff8ec;border:3px solid #999;}
+.cp-badge.t1{border-color:#9a9a9a;}.cp-badge.t2{border-color:#4ca428;}.cp-badge.t3{border-color:#2878d0;}
+.cp-badge.t4{border-color:#d89800;}.cp-badge.t5{border-color:#d8285a;}
+.cp-badge-note{font-size:11px;color:#8c5a28;margin-top:4px;}
+.cp-dates{margin-top:12px;font-size:13px;color:#3c2410;line-height:1.8;}
+.cp-dates .exp{font-size:16px;color:#b83000;}
+.cp-rules{margin-top:12px;text-align:left;background:#fff8ec;padding:10px 12px;border:1px solid #d8b888;}
+.cp-rules p{font-size:11px;color:#5c3a18;line-height:1.8;}
+.btn-use{background:var(--red);box-shadow:0 4px 0 #6e1400,0 6px 0 rgba(0,0,0,.5);font-size:18px;min-height:56px;}
+.cp-state{text-align:center;padding:30px 10px;}
+.cp-state-icon{font-size:44px;display:block;}
+.cp-state-title{font-size:20px;margin-top:10px;color:var(--acc2);}
+.cp-state-text{font-size:13px;color:var(--sub);margin-top:8px;line-height:1.9;}
+.cp-used-full{text-align:center;padding:34px 12px;}
+.cp-used-mark{display:inline-block;font-size:34px;color:#fff;background:var(--red);
+  padding:14px 28px;transform:rotate(-6deg);box-shadow:4px 4px 0 #000;letter-spacing:.1em;}
+.cp-used-when{margin-top:18px;font-size:14px;color:var(--txt);}
+.cp-used-msg{margin-top:10px;font-size:13px;color:var(--sub);line-height:1.9;}
+/* ?screen=coupon デバッグ表示用：実物と判別するSAMPLE透かし */
+.cp-sample{position:absolute;inset:0;z-index:6;display:flex;align-items:center;justify-content:center;
+  pointer-events:none;transform:rotate(-16deg);}
+.cp-sample span{font-size:42px;line-height:1.25;font-weight:700;letter-spacing:.08em;text-align:center;
+  color:rgba(216,40,0,.62);border:5px solid rgba(216,40,0,.62);background:rgba(255,248,236,.6);
+  padding:10px 26px;white-space:nowrap;}
+
+/* ── boss HUD（ボス戦中のみ表示・canvas右上） ── */
+#bossHud{position:absolute;top:4px;right:6px;z-index:4;pointer-events:none;
+  font-family:'DotGothic16',monospace;font-size:11px;line-height:1.3;text-align:right;
+  color:#a4e4fc;text-shadow:1px 1px 0 #000,-1px 1px 0 #000,1px -1px 0 #000;}
+#bossHud .bhp{font-size:13px;letter-spacing:2px;}
+#bossHud .bhp .on{color:#3cbcfc;}
+#bossHud .bhp .off{color:#404040;}
+
+/* ── modal ── */
+#modal{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.75);display:none;
+  align-items:center;justify-content:center;padding:20px;}
+#modal.show{display:flex;}
+.modal-box{background:var(--panel2);border:3px solid var(--acc);max-width:340px;width:100%;padding:18px 16px;}
+.modal-box p{font-size:14px;line-height:1.9;}
+.hide{display:none !important;}
+
+/* ── ピクセルUIアイコン（絵文字の代替・ドット絵世界観の統一） ── */
+.px-ico{width:16px;height:16px;image-rendering:pixelated;vertical-align:-2px;}
+.px-ico-lg{width:44px;height:44px;image-rendering:pixelated;display:inline-block;}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="top-bar">
+    <div class="top-brand"><img class="px-ico" data-ico="flame" alt=""> <strong>想夫恋 宇美店</strong> presents</div>
+    <button id="btnMute" type="button" aria-label="サウンド切替"></button>
+  </div>
+
+  <div id="hud">
+    <div id="hudScore">SCORE 0</div>
+    <div id="hudItems"></div>
+    <div id="hudBest">今日のベスト<br><span id="hudBestNum">--</span></div>
+  </div>
+
+  <div id="stage">
+    <canvas id="cv" width="256" height="144"></canvas>
+    <div class="scanlines"></div>
+    <div class="ovl" id="ovlTitle">
+      <div class="logo">カリカリ<br>ダッシュ</div>
+      <div class="logo-sub">〜走れ！めんたろう〜</div>
+      <div class="tap">▶ タップでスタート</div>
+    </div>
+    <div class="ovl"><div id="ovlGo">GO!</div></div>
+    <div class="ovl"><div id="ovlBanner">一皿完成！ソースタイム!!</div></div>
+    <div class="ovl"><div id="ovlGameover">GAME OVER</div></div>
+    <div id="bossHud" class="hide">ベチャゾバーン <span id="bossHudLv"></span><br><span class="bhp" id="bossHudHp"></span></div>
+  </div>
+
+  <!-- タイトルパネル -->
+  <div class="panel" id="panelTitle">
+    <div class="howto">
+      <p><span class="ico"><img class="px-ico" data-ico="tap" alt=""></span><span>タップでジャンプ、長押しで大ジャンプ</span></p>
+      <p><span class="ico"><img class="px-ico" data-ico="djump" alt=""></span><span>空中でもう1回タップ＝2段ジャンプ</span></p>
+      <p><span class="ico"><img class="px-ico" data-ico="pan" alt=""></span><span>敵は上から踏める！具材5つ集めて一皿完成</span></p>
+    </div>
+    <div class="note-all"><strong>50,000点</strong>達成で<br><strong>「お会計から50円引き」</strong>クーポン進呈！</div>
+    <div class="best-line" id="titleBest"></div>
+    <button id="btnCouponTitle" type="button" class="btn btn-coupon hide">クーポンを表示</button>
+    <div class="shop-mini">
+      想夫恋 宇美店（福岡県糟屋郡宇美町）／営業 11:00〜15:00・17:30〜19:30<br>
+      <a href="../">← サイトトップへ戻る</a>
+    </div>
+  </div>
+
+  <!-- リザルトパネル -->
+  <div class="panel hide" id="panelResult">
+    <div class="res-head">
+      <div class="res-label">SCORE</div>
+      <div id="resNum">0</div>
+      <div class="res-unit">点</div>
+    </div>
+    <div id="rankReveal">
+      <div class="rank-label">― 称号 ―</div>
+      <div id="rankName">見習い</div>
+      <div id="rankWord"></div>
+    </div>
+    <div id="resBests"></div>
+    <button id="btnRetry" type="button" class="btn btn-big">▶ もう一度はしる</button>
+    <button id="btnCouponRes" type="button" class="btn btn-coupon">50円引きクーポン</button>
+    <p class="best-line" id="resCouponNote" style="margin-top:8px;">高得点で50円引きクーポン進呈！</p>
+
+    <div class="cta">
+      <p class="cta-copy">本物のカリカリは、<span>お店で。</span></p>
+      <img src="../images/hero-right.jpg" alt="想夫恋 宇美店の日田焼きそば" loading="lazy">
+      <a id="telLink" class="btn-tel" href="tel:0929333991"><img class="px-ico" data-ico="phone" alt=""> 092-933-3991</a>
+      <p class="cta-hours">創業39年・日田焼きそば専門店 想夫恋 宇美店<br>営業時間 11:00〜15:00 ／ 17:30〜19:30</p>
+      <a class="cta-top" href="../">サイトトップへ戻る</a>
+    </div>
+  </div>
+
+  <p class="seo-foot">「カリカリダッシュ 〜走れ！めんたろう〜」は、創業39年・日田焼きそば専門店「想夫恋 宇美店」（福岡県糟屋郡宇美町）の公式ミニゲームです。焼きそばのヒーロー「めんたろう」が鉄板の上を駆け抜けるドット絵のレトロな横スクロールアクション。ハイスコア（50,000点）を達成すると「お会計から50円引き」クーポンをプレゼントしています（宇美店のみ・1日1枚）。</p>
+  <p class="copy-foot">© 想夫恋 宇美店</p>
+</div>
+
+<!-- クーポン画面 -->
+<div id="scrCoupon">
+  <div class="cp-wrap">
+    <div id="cpBody"></div>
+  </div>
+</div>
+
+<!-- 確認モーダル -->
+<div id="modal">
+  <div class="modal-box">
+    <p>スタッフの確認のもとで使用します。<br>よろしいですか？<br><small style="color:var(--sub)">（使用後は元に戻せません）</small></p>
+    <button id="mdYes" type="button" class="btn btn-use">はい、いま使う</button>
+    <button id="mdNo" type="button" class="btn btn-ghost">やめる</button>
+  </div>
+</div>
+
+<div id="autotest-result" style="display:none"></div>
+<script>
+(function(){
+'use strict';
+
+/* ━━━ URLパラメータ・テストモード ━━━ */
+var Q = new URLSearchParams(location.search);
+var AUTOTEST = Q.get('autotest') === '1';
+var SCREEN = Q.get('screen') || '';
+var TEST_MODE = AUTOTEST || SCREEN !== '';
+
+/* ━━━ autotest計測（最初に仕込む） ━━━ */
+var AT = { frames:0, simSeconds:0, score:0, gameOvers:0, couponIssued:false, maxSpeed:0, bossEncounters:0, bossDefeats:0, errors:[], done:false };
+window.onerror = function(msg, src, line){
+  if (AT.errors.length < 10) AT.errors.push(String(msg) + ' @' + line);
+};
+window.addEventListener('unhandledrejection', function(e){
+  if (AT.errors.length < 10) AT.errors.push('rejection: ' + String(e.reason));
+});
+
+/* ━━━ GA4（テストモードでは送らない / gtag未定義ガード） ━━━ */
+function track(name, params){
+  if (TEST_MODE) return;
+  try { if (typeof gtag === 'function') gtag('event', name, params || {}); } catch(e){}
+}
+function srcParam(){
+  try {
+    var v = Q.get('src');
+    if (!v) return 'direct';
+    v = v.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 32);
+    return v || 'direct';
+  } catch(e){ return 'direct'; }
+}
+
+/* ━━━ シード付きRNG（mulberry32） ━━━ */
+function mulberry32(a){
+  return function(){
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    var t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+var SEED = TEST_MODE ? 12345 : (Date.now() >>> 0);
+var rng = mulberry32(SEED);
+
+/* ━━━ 日付ユーティリティ（YYYY-MM-DD文字列比較） ━━━ */
+function ymd(d){
+  var m = ('0' + (d.getMonth() + 1)).slice(-2);
+  var dd = ('0' + d.getDate()).slice(-2);
+  return d.getFullYear() + '-' + m + '-' + dd;
+}
+function today(){ return ymd(new Date()); }
+function isYmd(s){ return typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s); }
+function parseYmd(s){ var p = s.split('-'); return new Date(+p[0], +p[1]-1, +p[2]); }
+function addDays(s, n){ var d = parseYmd(s); d.setDate(d.getDate() + n); return ymd(d); }
+function diffDays(a, b){ return Math.round((parseYmd(b) - parseYmd(a)) / 86400000); }
+function fmtJP(s){
+  var d = parseYmd(s);
+  var w = '日月火水木金土'.charAt(d.getDay());
+  return (d.getMonth()+1) + '/' + d.getDate() + '(' + w + ')';
+}
+function fmtWm(s){
+  var d = parseYmd(s);
+  var w = ['SUN','MON','TUE','WED','THU','FRI','SAT'][d.getDay()];
+  return (d.getMonth()+1) + '.' + d.getDate() + ' ' + w;
+}
+
+/* ━━━ ストア（localStorage・全例外握りつぶし＋破損復旧） ━━━ */
+/* テストモード（autotest/screen）は本番キーを読み書きしない：偽ベスト・偽クーポンの混入防止 */
+var KEY = TEST_MODE ? 'sofuren_karikari_test' : 'sofuren_karikari';
+var storageOK = true;
+var store = null;
+function sanitize(s){
+  if (!s || typeof s !== 'object' || Array.isArray(s)) return {};
+  /* 型の壊れたフィールドは捨てて新規扱い（TypeError防止） */
+  if (s.couponIssuedDate != null && !isYmd(s.couponIssuedDate)) {
+    delete s.couponIssuedDate; delete s.couponExpires; delete s.couponUsed;
+    delete s.couponUsedAt; delete s.couponTitle; delete s.couponCls;
+  }
+  if (s.couponExpires != null && !isYmd(s.couponExpires)) {
+    if (isYmd(s.couponIssuedDate)) s.couponExpires = addDays(s.couponIssuedDate, 6);
+    else { delete s.couponIssuedDate; delete s.couponExpires; }
+  }
+  if (s.couponUsed != null && typeof s.couponUsed !== 'boolean') s.couponUsed = !!s.couponUsed;
+  if (s.couponUsedAt != null && typeof s.couponUsedAt !== 'number') delete s.couponUsedAt;
+  if (s.couponTitle != null && typeof s.couponTitle !== 'string') delete s.couponTitle;
+  if (s.couponCls != null && typeof s.couponCls !== 'string') delete s.couponCls;
+  if (s.bestScore != null && typeof s.bestScore !== 'number') delete s.bestScore;
+  if (s.bestTitle != null && typeof s.bestTitle !== 'string') delete s.bestTitle;
+  if (s.todayBestDate != null && !isYmd(s.todayBestDate)) { delete s.todayBestDate; delete s.todayBestScore; }
+  if (s.todayBestScore != null && typeof s.todayBestScore !== 'number') delete s.todayBestScore;
+  if (s.lastPlayDate != null && !isYmd(s.lastPlayDate)) delete s.lastPlayDate;
+  if (s.playCountToday != null && typeof s.playCountToday !== 'number') delete s.playCountToday;
+  if (s.muted != null && typeof s.muted !== 'boolean') s.muted = !!s.muted;
+  return s;
+}
+function loadStore(){
+  if (store) return store;
+  var raw = null;
+  try { raw = localStorage.getItem(KEY); }
+  catch(e){ storageOK = false; }
+  var parsed = {};
+  try { parsed = raw ? JSON.parse(raw) : {}; }
+  catch(e){ parsed = {}; }
+  store = sanitize(parsed);
+  return store;
+}
+function saveStore(){
+  if (TEST_MODE) return; /* テストの結果を端末に永続化しない */
+  if (!store) return;
+  try { localStorage.setItem(KEY, JSON.stringify(store)); }
+  catch(e){ storageOK = false; }
+}
+/* タブ間同期（別タブでクーポン使用→即反映） */
+window.addEventListener('storage', function(e){
+  if (e.key !== KEY) return;
+  store = null; loadStore();
+  try {
+    if (scrCoupon.classList.contains('show')) renderCoupon();
+    refreshTitlePanel(); refreshCouponButtons();
+  } catch(err){}
+});
+
+/* ━━━ 称号（スコア帯の根拠は完了報告参照） ━━━ */
+function titleFor(score){
+  if (score >= 14000) return { name:'二代目級', cls:'t5', word:'その腕、もう店に立てるばい。' };
+  if (score >= 8000)  return { name:'匠',       cls:'t4', word:'あんた、ほんなこつ匠ばい。' };
+  if (score >= 4000)  return { name:'職人',     cls:'t3', word:'堂々たる走りっぷりたい！' };
+  if (score >= 1500)  return { name:'焼き手',   cls:'t2', word:'筋がよか！その調子たい。' };
+  return { name:'見習い', cls:'t1', word:'焦らんでよか。鉄板は逃げん。' };
+}
+
+/* ━━━ サウンド（WebAudio合成・autotest/screen時は完全スキップ＝ヘッドレス撮影ハング防止） ━━━ */
+var AC = null, master = null, noiseBuf = null;
+var muted = loadStore().muted === true;
+function audioInit(){
+  if (AC || AUTOTEST || SCREEN) return;
+  try {
+    var Ctor = window.AudioContext || window.webkitAudioContext;
+    if (!Ctor) return;
+    AC = new Ctor();
+    master = AC.createGain();
+    master.gain.value = muted ? 0 : 0.5;
+    master.connect(AC.destination);
+    var len = Math.floor(AC.sampleRate * 0.4);
+    noiseBuf = AC.createBuffer(1, len, AC.sampleRate);
+    var ch = noiseBuf.getChannelData(0);
+    for (var i = 0; i < len; i++) ch[i] = Math.random() * 2 - 1;
+    setInterval(schedTick, 60);
+  } catch(e){ AC = null; }
+}
+function setMuted(m){
+  muted = m;
+  var s = loadStore(); s.muted = m; saveStore();
+  if (master) master.gain.value = m ? 0 : 0.5;
+  document.getElementById('btnMute').innerHTML = icoHtml(m ? 'spkOff' : 'spkOn');
+}
+function mf(midi){ return 440 * Math.pow(2, (midi - 69) / 12); }
+function tone(type, midi, t0, dur, vol, slideTo){
+  if (!AC) return;
+  try {
+    var o = AC.createOscillator(), g = AC.createGain();
+    o.type = type;
+    o.frequency.setValueAtTime(typeof midi === 'number' && midi > 200 ? midi : mf(midi), t0);
+    if (slideTo) o.frequency.linearRampToValueAtTime(slideTo, t0 + dur);
+    g.gain.setValueAtTime(0, t0);
+    g.gain.linearRampToValueAtTime(vol, t0 + 0.006);
+    g.gain.setValueAtTime(vol, t0 + dur * 0.7);
+    g.gain.linearRampToValueAtTime(0.0001, t0 + dur);
+    o.connect(g); g.connect(master);
+    o.start(t0); o.stop(t0 + dur + 0.02);
+  } catch(e){}
+}
+function noise(t0, dur, vol, rate){
+  if (!AC || !noiseBuf) return;
+  try {
+    var s = AC.createBufferSource(), g = AC.createGain();
+    s.buffer = noiseBuf; s.playbackRate.value = rate || 1;
+    g.gain.setValueAtTime(vol, t0);
+    g.gain.linearRampToValueAtTime(0.0001, t0 + dur);
+    s.connect(g); g.connect(master);
+    s.start(t0); s.stop(t0 + dur + 0.02);
+  } catch(e){}
+}
+function now(){ return AC ? AC.currentTime : 0; }
+function sfxJump(){ tone('square', 310, now(), 0.12, 0.10, 640); }
+function sfxDJump(){ tone('square', 420, now(), 0.12, 0.10, 900); }
+function sfxCoin(){ var t = now(); tone('square', 988, t, 0.06, 0.09); tone('square', 1319, t + 0.06, 0.20, 0.09); }
+function sfxStomp(){ var t = now(); tone('square', 240, t, 0.09, 0.11, 70); noise(t, 0.08, 0.10, 0.7); }
+function sfxPlate(){
+  var t = now(), seq = [72,76,79,84,88,91,96];
+  for (var i = 0; i < seq.length; i++) tone('square', seq[i], t + i * 0.07, 0.09, 0.09);
+  tone('triangle', 48, t, 0.5, 0.10);
+}
+function sfxDeath(){
+  bgmStop();
+  var t = now(), seq = [67,66,65,60,55,48];
+  for (var i = 0; i < seq.length; i++) tone('square', seq[i], t + 0.06 + i * 0.10, 0.11, 0.09);
+  noise(t, 0.25, 0.10, 0.5);
+}
+function sfxCoupon(){ var t = now(); tone('square', 84, t, 0.08, 0.08); tone('square', 89, t + 0.09, 0.18, 0.08); }
+/* ボス戦SFX */
+function sfxBossWarn(){ var t = now(); tone('square', 55, t, 0.18, 0.09); tone('square', 58, t + 0.18, 0.30, 0.09); noise(t, 0.5, 0.05, 0.25); }
+function sfxSpit(){ var t = now(); tone('triangle', 196, t, 0.10, 0.07, 110); noise(t, 0.12, 0.07, 0.5); }
+function sfxBossHit(){ var t = now(); noise(t, 0.14, 0.13, 0.45); tone('square', 150, t, 0.12, 0.08, 70); }
+function sfxBossDie(){ var t = now(); tone('square', 196, t, 0.10, 0.09, 98); tone('square', 165, t + 0.10, 0.12, 0.09, 82); tone('square', 110, t + 0.22, 0.30, 0.09, 55); noise(t + 0.22, 0.4, 0.10, 0.2); }
+
+/* ━━━ BGM（8小節ループ・矩形波2＋三角波ベース・150BPM 16分=0.1s） ━━━ */
+var LEAD = [
+  [0,69,2],[2,72,2],[4,76,2],[6,72,2],[8,69,2],[10,72,2],[12,76,2],[14,79,2],
+  [16,77,3],[20,76,3],[24,74,3],[28,71,4],
+  [32,69,2],[34,72,2],[36,76,2],[38,72,2],[40,69,2],[42,72,2],[44,76,2],[46,81,2],
+  [48,79,3],[52,77,3],[56,76,2],[58,74,2],[60,76,4],
+  [64,72,4],[68,74,4],[72,76,4],[76,79,2],[78,76,2],
+  [80,74,4],[84,71,4],[88,67,4],[92,71,2],[94,74,2],
+  [96,69,2],[98,72,2],[100,76,2],[102,81,2],[104,79,2],[106,76,2],[108,72,2],[110,76,2],
+  [112,69,6],[120,64,4],[124,69,4]
+];
+var BASS = [
+  [0,45,2],[4,52,2],[8,45,2],[12,52,2],
+  [16,41,2],[20,48,2],[24,43,2],[28,50,2],
+  [32,45,2],[36,52,2],[40,45,2],[44,52,2],
+  [48,43,2],[52,50,2],[56,40,2],[60,47,2],
+  [64,48,2],[68,55,2],[72,48,2],[76,55,2],
+  [80,43,2],[84,50,2],[88,43,2],[92,50,2],
+  [96,45,2],[100,52,2],[104,45,2],[108,52,2],
+  [112,45,2],[116,52,2],[120,40,2],[124,45,2]
+];
+var HARM_BAR = [60,57,60,59,64,59,60,60]; /* 小節ごとの和音内音 */
+var leadMap = {}, bassMap = {};
+LEAD.forEach(function(n){ leadMap[n[0]] = n; });
+BASS.forEach(function(n){ bassMap[n[0]] = n; });
+var SLOT = 0.1;
+var bgm = { on:false, slot:0, next:0 };
+function bgmStart(){ if (!AC || bgm.on) return; bgm.on = true; bgm.slot = 0; bgm.next = AC.currentTime + 0.08; }
+function bgmStop(){ bgm.on = false; }
+function schedTick(){
+  if (!AC || !bgm.on) return;
+  while (bgm.next < AC.currentTime + 0.16) {
+    var s = bgm.slot, t = bgm.next;
+    var L = leadMap[s]; if (L) tone('square', L[1], t, L[2] * SLOT * 0.9, 0.045);
+    var B = bassMap[s]; if (B) tone('triangle', B[1], t, B[2] * SLOT * 0.95, 0.10);
+    var off = s % 16;
+    if (off === 2 || off === 6 || off === 10 || off === 14)
+      tone('square', HARM_BAR[(s / 16) | 0], t, SLOT * 0.6, 0.028);
+    bgm.slot = (bgm.slot + 1) % 128;
+    bgm.next += SLOT;
+  }
+}
+document.addEventListener('visibilitychange', function(){
+  if (!AC) return;
+  try { if (document.hidden) AC.suspend(); else AC.resume(); } catch(e){}
+});
+
+/* ━━━ パレット（レトロ8bit系16色・ブラウン×オレンジ寄せ） ━━━ */
+var PAL = {
+  '0':'#000000', '1':'#fcfcfc', '2':'#f8d878', '3':'#f8b800',
+  '4':'#fc9838', '5':'#e45c10', '6':'#a81000', '7':'#f83800',
+  '8':'#503000', '9':'#ac7c00', 'a':'#00a800', 'b':'#b8f818',
+  'c':'#787878', 'd':'#404040', 'e':'#fce0a8', 'f':'#f87858',
+  /* ボス用ブルー系（8bit標準ブルー・べちゃ麺の青白さ） */
+  'g':'#a4e4fc', 'h':'#3cbcfc', 'i':'#0078f8'
+};
+
+/* ━━━ スプライト定義（文字列グリッド→オフスクリーンcanvas） ━━━ */
+var SPR_DEF = {
+  menRun1: [
+    "......000000....",
+    ".....03333330...",
+    "....0323333230..",
+    "....0338333830..",
+    ".7707777777770..",
+    "...0eeeeeeee0...",
+    "...0ee0ee0ee0...",
+    "...0eeee00ee0...",
+    "....00000000....",
+    "..7703333330....",
+    ".77033333330....",
+    "....03333330....",
+    "....88....88....",
+    "...88......88..."
+  ],
+  menRun2: [
+    "......000000....",
+    ".....03333330...",
+    "....0323333230..",
+    "....0338333830..",
+    ".7707777777770..",
+    "...0eeeeeeee0...",
+    "...0ee0ee0ee0...",
+    "...0eeee00ee0...",
+    "....00000000....",
+    "..7703333330....",
+    ".77033333330....",
+    "....03333330....",
+    "......8888......",
+    "......8..8......"
+  ],
+  menJump: [
+    "......000000....",
+    ".....03333330...",
+    "....0323333230..",
+    "....0338333830..",
+    ".7707777777770..",
+    "...0eeeeeeee0...",
+    "...0ee0ee0ee0...",
+    "...0eeee00ee0...",
+    "....00000000....",
+    "..7703333330....",
+    ".77033333330....",
+    "....03333330....",
+    "....88..88......",
+    "................"
+  ],
+  moyashi1: [
+    "....bb....",
+    "...bbbb...",
+    "....bb....",
+    "...0110...",
+    "..011110..",
+    "..010110..",
+    "..011110..",
+    "...0110...",
+    "...1111...",
+    "...1111...",
+    "...0..0...",
+    "..0....0.."
+  ],
+  moyashi2: [
+    "....bb....",
+    "...bbbb...",
+    "....bb....",
+    "...0110...",
+    "..011110..",
+    "..010110..",
+    "..011110..",
+    "...0110...",
+    "...1111...",
+    "...1111...",
+    "....00....",
+    "...0..0..."
+  ],
+  pepper: [
+    "....88....",
+    "...0aa0...",
+    "..0aaaa0..",
+    ".0abaaaa0.",
+    ".0aaaaaa0.",
+    ".0a0aa0a0.",
+    ".0aaaaaa0.",
+    ".0a0000a0.",
+    "..0aaaa0..",
+    "...0000..."
+  ],
+  onion1: [
+    "....99....",
+    "...0110...",
+    "..019910..",
+    ".01199110.",
+    ".01199110.",
+    ".01199110.",
+    ".01199110.",
+    "..019910..",
+    "...0110...",
+    "....00...."
+  ],
+  onion2: [
+    "....99....",
+    "...0110...",
+    "..011110..",
+    ".09111190.",
+    ".09111190.",
+    ".09111190.",
+    ".09111190.",
+    "..011110..",
+    "...0110...",
+    "....00...."
+  ],
+  rock: [
+    "....000.....",
+    "...00d00....",
+    "..0dd0dd0...",
+    ".0dd00ddd0..",
+    ".0dd50dddd0.",
+    "0dddddddddd0",
+    "0dd0ddd5d0d0",
+    "0dddddddddd0",
+    "000000000000"
+  ],
+  itMen: [
+    "........",
+    "..3333..",
+    ".323323.",
+    "33233233",
+    "33333333",
+    ".333333.",
+    ".cccccc.",
+    "........"
+  ],
+  itPork: [
+    "........",
+    "..1111..",
+    ".1ffff1.",
+    ".1f1ff1.",
+    ".1ffff1.",
+    "..1111..",
+    "........",
+    "........"
+  ],
+  itMoyashi: [
+    "...bb...",
+    "...11...",
+    "...11...",
+    "..11....",
+    "..11....",
+    "...1....",
+    "...9....",
+    "........"
+  ],
+  itNira: [
+    "a..a..a.",
+    ".a.a.a..",
+    ".a.a.a..",
+    "..aaa...",
+    "..aaa...",
+    "...a....",
+    "...9....",
+    "........"
+  ],
+  itSauce: [
+    "...77...",
+    "...00...",
+    ".088880.",
+    ".081180.",
+    ".081180.",
+    ".088880.",
+    "..0000..",
+    "........"
+  ],
+  /* ━━ ボス「ベチャゾバーン」（べちゃ麺の魔王・28x26・うねうね2フレーム） ━━ */
+  boss1: [
+    "........000000000...........",
+    "......00hhhhhhhhh00.........",
+    ".....0hhgghhhhgghhh00.......",
+    "....0hghhhhgghhhhgghh0......",
+    "...0hhhgghhhhhhgghhhhh0.....",
+    "..0hgghhhhgghhhhhhgghhh0....",
+    "..0hhhhgghhhhhgghhhhhhh0....",
+    ".0hhgghhhhhgghhhhhgghhhh0...",
+    ".0hhhhhhhhhhhhhhhhhhhhgh0...",
+    ".0hh111hhhhhhhhhh111hhhh0...",
+    ".0h10001hhhhhhhh10001hhh0...",
+    ".0h10001hhhhhhhh10001hgh0...",
+    ".0hh000hhhhhhhhhh000hhhh0...",
+    ".0ghhhhhhh000000hhhhhhhh0...",
+    ".0hhhghh00iiiiii00hhghhi0...",
+    ".0ihhhh0iiiiiiiiii0hhhii0...",
+    ".0ihghh00iiiiiiii00hhiii0...",
+    ".0iihhhhh00000000hhhhiii0...",
+    ".0iihhhhhhhhhhhhhhhhiii0....",
+    "..0iihghhhhhhhhhghhiii0.....",
+    "..00iihhhhhhhhhhhhiii00.....",
+    "...0ii0hhh0iii0hhh0ii0......",
+    "...0i0.0h0.0i0.0h0.0i0......",
+    "....8...8...8...8...8.......",
+    "....8.......8...............",
+    "........8..................."
+  ],
+  boss2: [
+    "........000000000...........",
+    "......00hhgghhhhh00.........",
+    ".....0hhhhhhgghhhhh00.......",
+    "....0hgghhhhhhhgghhhh0......",
+    "...0hhhhhgghhhhhhhgghh0.....",
+    "..0hhhgghhhhhgghhhhhhhh0....",
+    "..0hgghhhhgghhhhhgghhhh0....",
+    ".0hhhhhgghhhhhgghhhhhggh0...",
+    ".0hghhhhhhhhhhhhhhhhhhhh0...",
+    ".0hh111hhhhhhhhhh111hhgh0...",
+    ".0h10001hhhhhhhh10001hhh0...",
+    ".0h10001hhhhhhhh10001hhh0...",
+    ".0hh000hhhhhhhhhh000hhhh0...",
+    ".0ghhhhhhh000000hhhhhhhi0...",
+    ".0hhhghh00iiiiii00hhghii0...",
+    ".0ihhhh0iiiiiiiiii0hhhii0...",
+    ".0ihghh00iiiiiiii00hhiii0...",
+    ".0iihhhhh00000000hhhhiii0...",
+    ".0iihhhhhhhhhhhhhhhhiii0....",
+    "..0iihhhhhghhhhhhhhiii0.....",
+    "..00iihhhhhhhhhhhhiii00.....",
+    "...0ii0hhh0iii0hhh0ii0......",
+    "....0h0.0i0.0h0.0i0.0i0.....",
+    ".....8...8...8...8...8......",
+    ".........8.......8..........",
+    ".....8......................"
+  ]
+};
+
+/* ━━━ DOM UI用ピクセルアイコン（絵文字は世界観を壊すため全廃。券面の🔥のみ偽造防止機能として例外） ━━━ */
+var UI_DEF = {
+  flame: [
+    "...7....",
+    "...77...",
+    "..777.7.",
+    ".7747.77",
+    ".744477.",
+    "7443347.",
+    "7433347.",
+    ".74447.."
+  ],
+  spkOn: [
+    "...1....",
+    "..11..3.",
+    ".111.3.3",
+    "1111.3.3",
+    "1111.3.3",
+    ".111.3.3",
+    "..11..3.",
+    "...1...."
+  ],
+  spkOff: [
+    "...1....",
+    "..11....",
+    ".111.7.7",
+    "1111..7.",
+    "1111..7.",
+    ".111.7.7",
+    "..11....",
+    "...1...."
+  ],
+  tap: [
+    "...11...",
+    "...11...",
+    "...11...",
+    ".111111.",
+    "1111111.",
+    "1111111.",
+    ".111111.",
+    "..1111.."
+  ],
+  djump: [
+    "...33...",
+    "..3333..",
+    ".33..33.",
+    "33....33",
+    "...33...",
+    "..3333..",
+    ".33..33.",
+    "33....33"
+  ],
+  pan: [
+    "..2..2..",
+    ".2..2...",
+    "........",
+    ".000000.",
+    "033333cc",
+    "0333330.",
+    ".000000.",
+    "........"
+  ],
+  ticket: [
+    "........",
+    "00000000",
+    "02222920",
+    "02222020",
+    "02222920",
+    "02222020",
+    "00000000",
+    "........"
+  ],
+  phone: [
+    ".11.....",
+    "111.....",
+    "11......",
+    "11......",
+    "11......",
+    "11....11",
+    "111..111",
+    ".111111."
+  ],
+  hourglass: [
+    "11111111",
+    ".122221.",
+    "..1221..",
+    "...11...",
+    "..1..1..",
+    ".1.22.1.",
+    "1.2222.1",
+    "11111111"
+  ]
+};
+var UI_URL = {};
+function buildUiIcons(){
+  var k, i;
+  for (k in UI_DEF) UI_URL[k] = decodeSpr(UI_DEF[k]).toDataURL();
+  var imgs = document.querySelectorAll('img[data-ico]');
+  for (i = 0; i < imgs.length; i++) {
+    var n = imgs[i].getAttribute('data-ico');
+    if (UI_URL[n]) imgs[i].src = UI_URL[n];
+  }
+}
+function icoHtml(name, cls){
+  return '<img class="' + (cls || 'px-ico') + '" alt="" src="' + (UI_URL[name] || '') + '">';
+}
+
+function decodeSpr(rows, mapFn){
+  var h = rows.length, w = 0, y, x;
+  for (y = 0; y < h; y++) if (rows[y].length > w) w = rows[y].length;
+  var c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  var g = c.getContext('2d');
+  var img = g.createImageData(w, h);
+  for (y = 0; y < h; y++) {
+    var row = rows[y];
+    for (x = 0; x < w; x++) {
+      var ch = x < row.length ? row.charAt(x) : '.';
+      if (ch === '.' || ch === ' ') continue;
+      if (mapFn) ch = mapFn(ch);
+      var hex = PAL[ch] || '#ff00ff';
+      var i = (y * w + x) * 4;
+      img.data[i]     = parseInt(hex.slice(1,3), 16);
+      img.data[i + 1] = parseInt(hex.slice(3,5), 16);
+      img.data[i + 2] = parseInt(hex.slice(5,7), 16);
+      img.data[i + 3] = 255;
+    }
+  }
+  g.putImageData(img, 0, 0);
+  return c;
+}
+
+var SPR = {};
+var MEN_RAINBOW = []; /* [variant][frame] */
+var MEN_BURNT = null;
+function buildSprites(){
+  for (var k in SPR_DEF) SPR[k] = decodeSpr(SPR_DEF[k]);
+  /* ソースタイム虹色（パレットローテーション4種×3フレーム） */
+  var rots = [
+    {'3':'7','2':'4','e':'2','7':'3'},
+    {'3':'a','2':'b','e':'1','7':'4'},
+    {'3':'4','2':'2','e':'e','7':'b'},
+    {'3':'2','2':'1','e':'4','7':'7'}
+  ];
+  var frames = ['menRun1','menRun2','menJump'];
+  for (var v = 0; v < 4; v++) {
+    MEN_RAINBOW[v] = {};
+    (function(rot, vv){
+      frames.forEach(function(f){
+        MEN_RAINBOW[vv][f] = decodeSpr(SPR_DEF[f], function(ch){ return rot[ch] || ch; });
+      });
+    })(rots[v], v);
+  }
+  /* 焦げためんたろう（死亡用） */
+  MEN_BURNT = decodeSpr(SPR_DEF.menJump, function(ch){
+    return ({'3':'d','2':'c','e':'9','7':'6'})[ch] || ch;
+  });
+}
+
+/* ━━━ 3x5ピクセルフォント（スコアポップ用） ━━━ */
+var DIG = {
+  '0':["111","101","101","101","111"], '1':["010","110","010","010","111"],
+  '2':["111","001","111","100","111"], '3':["111","001","111","001","111"],
+  '4':["101","101","111","001","001"], '5':["111","100","111","001","111"],
+  '6':["111","100","111","101","111"], '7':["111","001","010","010","010"],
+  '8':["111","101","111","101","111"], '9':["111","101","111","001","111"],
+  '+':["000","010","111","010","000"], 'x':["000","101","010","101","000"]
+};
+function drawPix(g, str, x, y, color){
+  g.fillStyle = color;
+  for (var i = 0; i < str.length; i++) {
+    var glyph = DIG[str.charAt(i)];
+    if (!glyph) { continue; }
+    for (var gy = 0; gy < 5; gy++)
+      for (var gx = 0; gx < 3; gx++)
+        if (glyph[gy].charAt(gx) === '1') g.fillRect(x + i * 4 + gx, y + gy, 1, 1);
+  }
+}
+
+/* ━━━ 背景レイヤー（起動時に生成） ━━━ */
+var W = 256, H = 144, GY = 120; /* GY=鉄板表面 */
+var skyCv = null, mtCv = null, stCv = null;
+function buildBg(){
+  /* 夕焼け空（ハードバンド） */
+  skyCv = document.createElement('canvas'); skyCv.width = W; skyCv.height = H;
+  var g = skyCv.getContext('2d');
+  var bands = ['#301850','#642060','#a83808','#e45c10','#fc9838'];
+  var bh = Math.ceil(GY / bands.length);
+  for (var i = 0; i < bands.length; i++) { g.fillStyle = bands[i]; g.fillRect(0, i * bh, W, bh); }
+  g.fillStyle = '#0a0604'; g.fillRect(0, GY, W, H - GY);
+  /* 夕日 */
+  g.fillStyle = '#f8d878';
+  g.fillRect(196, 52, 16, 16); g.fillRect(194, 56, 20, 8); g.fillRect(198, 50, 12, 20);
+  g.fillStyle = '#fce0a8'; g.fillRect(200, 56, 8, 8);
+  /* 雲シルエット */
+  g.fillStyle = 'rgba(80,24,40,.55)';
+  g.fillRect(20, 30, 44, 5); g.fillRect(28, 26, 26, 4);
+  g.fillRect(120, 44, 36, 5); g.fillRect(128, 40, 18, 4);
+
+  /* 遠景：宇美の山なみ＋鳥居（512px・パララックス0.15） */
+  mtCv = document.createElement('canvas'); mtCv.width = 512; mtCv.height = 96;
+  g = mtCv.getContext('2d');
+  var x, h1;
+  for (x = 0; x < 512; x++) {
+    h1 = 34 + 17 * Math.sin(x / 61) + 9 * Math.sin(x / 27 + 2);
+    h1 = Math.floor(h1 / 3) * 3;
+    g.fillStyle = '#46201c'; g.fillRect(x, 96 - h1, 1, h1);
+  }
+  for (x = 0; x < 512; x++) {
+    h1 = 20 + 12 * Math.sin(x / 39 + 1) + 6 * Math.sin(x / 16);
+    h1 = Math.floor(h1 / 3) * 3;
+    g.fillStyle = '#2c1210'; g.fillRect(x, 96 - h1, 1, h1);
+  }
+  /* 鳥居（宇美八幡宮シルエット） */
+  g.fillStyle = '#180a06';
+  g.fillRect(186, 64, 4, 32); g.fillRect(210, 64, 4, 32);
+  g.fillRect(180, 60, 40, 5); g.fillRect(178, 58, 4, 4); g.fillRect(218, 58, 4, 4);
+  g.fillRect(184, 70, 32, 4); g.fillRect(198, 60, 4, 10);
+
+  /* 中景：店先（暖簾・提灯）シルエット（512px・パララックス0.45） */
+  stCv = document.createElement('canvas'); stCv.width = 512; stCv.height = 64;
+  g = stCv.getContext('2d');
+  for (var n = 0; n < 4; n++) {
+    var bx = 24 + n * 128;
+    /* 屋根 */
+    g.fillStyle = '#1c0c04'; g.fillRect(bx - 8, 8, 72, 6);
+    /* 暖簾 */
+    g.fillStyle = '#581808'; g.fillRect(bx, 14, 56, 16);
+    g.fillStyle = '#300c04';
+    for (var sx = bx + 8; sx < bx + 56; sx += 10) g.fillRect(sx, 18, 2, 12);
+    /* 柱 */
+    g.fillStyle = '#1c0c04'; g.fillRect(bx - 6, 8, 4, 56); g.fillRect(bx + 58, 8, 4, 56);
+    /* 提灯 */
+    g.fillStyle = '#201008'; g.fillRect(bx + 66, 14, 8, 3);
+    g.fillStyle = '#e45c10'; g.fillRect(bx + 65, 17, 10, 12);
+    g.fillStyle = '#f8b800'; g.fillRect(bx + 68, 20, 4, 6);
+    g.fillStyle = '#201008'; g.fillRect(bx + 66, 29, 8, 3);
+  }
+}
+
+/* ━━━ ゲーム定数 ━━━ */
+var STEP = 1 / 60;
+var GRAV = 640, JUMP_V = -185, CUT_V = -80, DJUMP_V = -175;
+var STOMP_V = -160, STOMP_VH = -215;
+var COYOTE = 0.08, BUFFER = 0.10;
+var V0 = 55, ACCEL = 1.8, VMAX = 150;
+var PX = 48; /* プレイヤー画面固定x（左端基準） */
+var OIL_IDLE = 1.2, OIL_WARN = 0.6, OIL_ERUPT = 0.5, OIL_CYCLE = OIL_IDLE + OIL_WARN + OIL_ERUPT;
+var ITEM_TYPES = ['itMen','itPork','itMoyashi','itNira','itSauce'];
+var ITEM_NAMES = ['麺','豚肉','もやし','ニラ','ソース'];
+var ITEM_Y = [GY - 14, GY - 28, GY - 42];
+/* クーポン発行に必要なスコア（この点数以上で1日1枚発行） */
+var COUPON_MIN_SCORE = 50000;
+
+/* ━━━ 難易度プレハブチャンク（tile=8px / minD=tile距離 / minV=速度下限） ━━━ */
+/* gap保証: 8タイル(64px)以下。単発ジャンプ飛距離=v*0.578なので
+   gap2(16px)はv55でも余裕、gap3(24px)はminV62、gap4(32px)はminV85（2段で全速度OK） */
+var CHUNKS = [
+  { id:'flat',    len:12, minD:0,   minV:0,  items:[[3,1],[6,1],[9,1]] },
+  { id:'rock1',   len:14, minD:0,   minV:0,  rocks:[7], items:[[6,1],[7,2],[8,1]] },
+  { id:'gap2',    len:14, minD:0,   minV:0,  gaps:[[6,2]], items:[[6,1],[7,1]] },
+  { id:'moyashi', len:16, minD:50,  minV:0,  en:[['m',9],['m',13]], items:[[5,1],[11,2]] },
+  { id:'oil1',    len:16, minD:80,  minV:0,  oils:[8], items:[[8,2],[12,1]] },
+  { id:'rock2',   len:18, minD:110, minV:0,  rocks:[6,12], items:[[6,2],[9,1],[12,2]] },
+  { id:'gap3',    len:16, minD:100, minV:62, gaps:[[6,3]], items:[[6,1],[7,2],[8,1]] },
+  { id:'gaprock', len:18, minD:150, minV:62, gaps:[[5,2]], rocks:[12], items:[[5,1],[12,2]] },
+  { id:'pepper',  len:16, minD:200, minV:0,  en:[['p',9]], items:[[8,2],[13,1]] },
+  { id:'chain3',  len:20, minD:240, minV:0,  en:[['m',8],['m',11],['m',14]], items:[[9,2],[12,2]] },
+  { id:'oil2',    len:20, minD:280, minV:0,  oils:[7,13], items:[[10,1],[16,1]] },
+  { id:'onion',   len:18, minD:320, minV:0,  en:[['o',15]], items:[[6,1],[10,2]] },
+  { id:'pepper2', len:18, minD:360, minV:0,  en:[['p',7],['p',12]], items:[[9,2],[15,1]] },
+  { id:'gap4',    len:18, minD:220, minV:85, gaps:[[6,4]], items:[[6,1],[7,2],[9,1]] },
+  { id:'gauntlet',len:24, minD:420, minV:90, gaps:[[4,2]], en:[['m',10]], rocks:[15], oils:[19], items:[[4,1],[12,2],[21,1]] },
+  { id:'onrock',  len:20, minD:460, minV:95, rocks:[8], en:[['o',17]], items:[[8,2],[12,1]] }
+];
+
+/* ━━━ ランタイム状態 ━━━ */
+var state = 'title'; /* title | play | dying | result */
+var camX = 0, speed = V0, dist = 0, scoreF = 0, score = 0;
+var genX = 0, gaps = [], ents = [], parts = [], pops = [], steam = [];
+var collected = [false,false,false,false,false], itemCursor = 0;
+var sauce = 0, plates = 0;
+var py = GY - 14, pvy = 0, grounded = true, jumps = 0;
+var coyote = 0, jbuf = 0, held = false, squash = 0, runT = 0;
+var stompChain = 0;
+var deathT = 0, deathKind = '';
+var curTitle = null, retryCount = 0, sessionStarted = false;
+var titleCam = 0;
+var freeze = false; /* ?screen=play 用 */
+var simT = 0;
+
+/* ソースタイム巨大化（描画のみ3倍・当たり判定/物理は不変） */
+var SAUCE_SCALE = 3;      /* 整数倍（ドット絵のにじみ防止） */
+var SCALE_DUR = 0.25;     /* 変身トランジション秒数 */
+var SHRINK_AT = 1.5;      /* 残り1.5秒＝既存の点滅警告と同時に縮小開始 */
+var pScale = 1, pScaleFrom = 1, pScaleTo = 1, pScaleT = 1;
+var shake = 0;            /* 巨大化中の着地シェイク残り秒数 */
+
+/* ━━━ ボス「ベチャゾバーン」（べちゃ麺の魔王）━━━ */
+/* 戦闘フロー: intro→(attack→telegraph→expose)×HP→dying。
+   attack=高所を漂い、ラウンドごとに異なる攻撃(単発/連射/べちゃ波)を繰り出す(ジャンプで回避)。
+   expose=低所に降り踏める(接触無害)。ラウンドにより停止/横移動(動く的)が変わる。 */
+/* 出現頻度: 本番は控えめ(初回~17秒・以降~24秒間隔)。autotestは到達性確保のため初回距離のみ短縮 */
+var BOSS_DIST0 = TEST_MODE ? 420 : 1300; /* 初回ボスまでの距離(px)。以降は +BOSS_INTERVAL */
+var BOSS_INTERVAL = 2400;
+var BOSS_HP0 = 3;         /* Lv1のHP。Lvごとに+1 */
+var BOSS_HOVER_Y = GY - 100; /* 漂行時のスプライト上端y(遠い＝踏めない) */
+var BOSS_TELE_Y  = GY - 78;
+var BOSS_EXPOSE_Y = GY - 42; /* 露出時のスプライト上端y(踏める高さ・全ラウンド共通=単発ジャンプ可達) */
+var BOSS_ATTACK_T = 1.9, BOSS_TELE_T = 0.6, BOSS_EXPOSE_T = 1.4, BOSS_INTRO_T = 1.0;
+var BOSS_BONUS = 1500;    /* 撃破ボーナス(×Lv) */
+var BOSS_PATTERNS = 4;    /* 攻撃ラウンドの種類数(順繰りで多様化) */
+var bossDist = BOSS_DIST0; /* 次のボス出現距離 */
+var bossLv = 1;
+var boss = null;          /* {x,y,hp,maxHp,phase,t,invuln,flash,spit,round,pattern,driftDir,vy} */
+var globs = [];           /* 投射物 {x,y,vx,vy,t,grounded,wave} */
+var bossBanner = 0;       /* 撃破バナー演出残り */
+
+function resetRun(){
+  camX = 0; speed = V0; dist = 0; scoreF = 0; score = 0;
+  genX = 0; gaps = []; ents = []; parts = []; pops = []; steam = [];
+  collected = [false,false,false,false,false]; itemCursor = 0;
+  sauce = 0; plates = 0;
+  py = GY - 14; pvy = 0; grounded = true; jumps = 0;
+  coyote = 0; jbuf = 0; held = false; squash = 0; runT = 0;
+  stompChain = 0; deathT = 0; deathKind = '';
+  pScale = 1; pScaleFrom = 1; pScaleTo = 1; pScaleT = 1; shake = 0;
+  /* ボス状態リセット */
+  boss = null; globs = []; bossDist = BOSS_DIST0; bossLv = 1; bossBanner = 0;
+  hideBossHud();
+  /* 助走区間（フラット） */
+  genX = 0;
+  layChunk(CHUNKS[0]);
+  ensureGen();
+  updateHudItems();
+}
+
+/* ━━━ 生成 ━━━ */
+function pickChunk(){
+  var dTiles = dist / 8;
+  var pool = [];
+  for (var i = 0; i < CHUNKS.length; i++) {
+    var c = CHUNKS[i];
+    if (dTiles >= c.minD && speed >= c.minV) pool.push(c);
+  }
+  if (!pool.length) pool = [CHUNKS[0]];
+  return pool[Math.floor(rng() * pool.length) % pool.length];
+}
+function nextItemType(){
+  var missing = [];
+  for (var i = 0; i < 5; i++) if (!collected[i]) missing.push(i);
+  if (!missing.length) return Math.floor(rng() * 5);
+  return missing[(itemCursor++) % missing.length];
+}
+function layChunk(c){
+  var base = genX, i;
+  if (c.gaps) for (i = 0; i < c.gaps.length; i++)
+    gaps.push({ a: base + c.gaps[i][0] * 8, b: base + (c.gaps[i][0] + c.gaps[i][1]) * 8 });
+  if (c.rocks) for (i = 0; i < c.rocks.length; i++)
+    ents.push({ k:'rock', x: base + c.rocks[i] * 8, y: GY - 9, w: 12, h: 9, seen:false, skip:false });
+  if (c.oils) for (i = 0; i < c.oils.length; i++)
+    ents.push({ k:'oil', x: base + c.oils[i] * 8, y: GY, w: 8, h: 30, ph: rng() * OIL_CYCLE, seen:false, skip:false });
+  if (c.en) for (i = 0; i < c.en.length; i++) {
+    var t = c.en[i][0], ex = base + c.en[i][1] * 8;
+    if (t === 'm') ents.push({ k:'m', x: ex, y: GY - 12, w: 8, h: 11, vx: -14, dead:0, seen:false, skip:false, animT:0 });
+    else if (t === 'p') ents.push({ k:'p', x: ex, y: GY - 10, w: 8, h: 9, vy: 0, hopT: rng() * 0.5, dead:0, seen:false, skip:false });
+    else ents.push({ k:'o', x: ex, y: GY - 10, w: 9, h: 9, vx: -58, vy: 0, dead:0, seen:false, skip:false, animT:0 });
+  }
+  if (c.items) for (i = 0; i < c.items.length; i++)
+    ents.push({ k:'item', t: nextItemType(), x: base + c.items[i][0] * 8, y: ITEM_Y[c.items[i][1]], w: 8, h: 8, bob: rng() * 6.28 });
+  genX += c.len * 8;
+}
+function ensureGen(){
+  while (genX < camX + W + 80) {
+    layChunk(pickChunk());
+    /* 息継ぎ（4〜6タイルのフラット） */
+    var breath = 4 + Math.floor(rng() * 3);
+    if (rng() < 0.35) ents.push({ k:'item', t: nextItemType(), x: genX + Math.floor(breath / 2) * 8, y: ITEM_Y[1], w: 8, h: 8, bob: rng() * 6.28 });
+    genX += breath * 8;
+  }
+  /* 後方の掃除 */
+  while (gaps.length && gaps[0].b < camX - 40) gaps.shift();
+  for (var i = ents.length - 1; i >= 0; i--)
+    if (ents[i].x < camX - 32) ents.splice(i, 1);
+}
+function groundAt(wx){
+  for (var i = 0; i < gaps.length; i++)
+    if (wx >= gaps[i].a && wx < gaps[i].b) return false;
+  return true;
+}
+
+/* ━━━ 入力 ━━━ */
+function pressJump(){ jbuf = BUFFER; held = true; }
+function releaseJump(){ held = false; }
+function tryJump(){
+  if (jbuf <= 0) return;
+  if (grounded || coyote > 0) {
+    pvy = JUMP_V; grounded = false; coyote = 0; jbuf = 0; jumps = 1;
+    sfxJump();
+  } else if (jumps <= 1) { /* 歩き落ち(jumps=0)でも空中ジャンプ資源を1回使える */
+    pvy = DJUMP_V; jbuf = 0; jumps = 2;
+    sfxDJump();
+    spawnParts(camX + PX + 8, py + 14, 4, '#fcfcfc');
+  }
+}
+
+/* ━━━ スコア・演出ヘルパ ━━━ */
+function addScore(n){ scoreF += n * (sauce > 0 ? 2 : 1); score = Math.floor(scoreF); }
+function popText(wx, wy, str, color){ pops.push({ x: wx, y: wy, t: 0, str: str, c: color || '#fcfcfc' }); }
+function spawnParts(wx, wy, n, color){
+  for (var i = 0; i < n; i++)
+    parts.push({ x: wx, y: wy, vx: (Math.random() - 0.5) * 60, vy: -20 - Math.random() * 50, t: 0, life: 0.4 + Math.random() * 0.3, c: color });
+}
+
+/* ━━━ ソースタイム巨大化スケール（描画専用。発動で1→3「ぽよん」、警告点滅と同時に3→1） ━━━ */
+function updatePScale(){
+  var to = sauce > SHRINK_AT ? SAUCE_SCALE : 1;
+  if (to !== pScaleTo) { pScaleFrom = pScale; pScaleTo = to; pScaleT = 0; }
+  if (pScaleT < 1) {
+    pScaleT = Math.min(1, pScaleT + STEP / SCALE_DUR);
+    var p = pScaleT, e;
+    if (pScaleTo > pScaleFrom) {
+      /* ease-out-back：軽いオーバーシュートで「ぽよん」 */
+      var c1 = 1.70158, c3 = c1 + 1;
+      e = 1 + c3 * Math.pow(p - 1, 3) + c1 * Math.pow(p - 1, 2);
+    } else {
+      e = 1 - Math.pow(1 - p, 3); /* 縮小はease-out cubic */
+    }
+    pScale = pScaleFrom + (pScaleTo - pScaleFrom) * e;
+  }
+}
+
+/* ━━━ メイン更新（固定60Hz 1ステップ） ━━━ */
+function step(){
+  simT += STEP;
+  if (shake > 0) shake -= STEP;
+  if (bossBanner > 0) bossBanner -= STEP;
+  updatePScale();
+  if (state === 'title') { titleCam += 20 * STEP; updateSteamTitle(); return; }
+  if (state === 'dying') { stepDying(); return; }
+  if (state === 'boss') { stepBoss(); return; }
+  if (state !== 'play') return;
+
+  /* ボス出現（接地時にクリーンに突入） */
+  if (!boss && dist >= bossDist && grounded) { startBoss(); return; }
+
+  /* 加速 */
+  speed = Math.min(VMAX, speed + ACCEL * STEP);
+  var v = speed * (sauce > 0 ? 1.5 : 1);
+  if (AUTOTEST && v > AT.maxSpeed) AT.maxSpeed = Math.round(v * 10) / 10;
+  camX += v * STEP;
+  dist += v * STEP;
+  addScore(v * STEP / 8); /* 距離得点：1点/8px */
+  if (sauce > 0) { sauce -= STEP; if (sauce <= 0) { sauce = 0; updateHudItems(); } }
+  runT += STEP;
+
+  ensureGen();
+
+  /* ── プレイヤー物理 ── */
+  var pcx = camX + PX + 8; /* 中心ワールドx */
+  if (jbuf > 0) jbuf -= STEP;
+  if (coyote > 0) coyote -= STEP;
+  if (squash > 0) squash -= STEP;
+  tryJump();
+
+  var wasGrounded = grounded;
+  var prevBottom = py + 14;
+  pvy += GRAV * STEP;
+  if (pvy > 320) pvy = 320;
+  if (!held && pvy < CUT_V) pvy = CUT_V; /* 可変ジャンプ */
+  py += pvy * STEP;
+
+  var support = groundAt(pcx - 3) || groundAt(pcx + 3);
+  if (pvy >= 0 && support && py + 14 >= GY && prevBottom <= GY + 8) {
+    /* 着地 */
+    py = GY - 14; pvy = 0;
+    if (!wasGrounded) {
+      squash = 0.12; stompChain = 0;
+      if (pScale > 2) {
+        /* 巨大化中の着地：小さな画面シェイク（約3フレーム）＋土煙 */
+        shake = 0.05;
+        spawnParts(pcx - 9, GY - 2, 4, '#787878');
+        spawnParts(pcx + 9, GY - 2, 4, '#787878');
+        spawnParts(pcx, GY - 1, 3, '#fce0a8');
+      }
+    }
+    grounded = true; jumps = 0;
+  } else {
+    if (wasGrounded && support && py + 14 >= GY && pvy >= 0) {
+      py = GY - 14; pvy = 0; grounded = true;
+    } else {
+      if (wasGrounded && pvy >= 0) coyote = COYOTE; /* 歩き落ちのみコヨーテ付与 */
+      grounded = false;
+    }
+  }
+  /* 穴落下（supportではなくgroundedで判定：穴の遠端を掠めた際のすり抜け防止） */
+  if (!grounded && py + 14 > GY + 8) { die('fall'); return; }
+
+  /* ── エンティティ更新 ── */
+  var pl = { x: pcx - 5, y: py + 1, w: 10, h: 13 };
+  for (var i = ents.length - 1; i >= 0; i--) {
+    var e = ents[i];
+    if (e.x > camX + W + 40) continue;
+    if (e.k === 'm') {
+      e.animT += STEP;
+      var nx = e.x + e.vx * STEP;
+      if (!groundAt(nx + (e.vx < 0 ? 0 : e.w))) e.vx = -e.vx;
+      else e.x = nx;
+    } else if (e.k === 'p') {
+      e.hopT -= STEP;
+      if (e.y + e.h >= GY && e.vy >= 0) {
+        e.y = GY - e.h; e.vy = 0;
+        if (e.hopT <= 0) { e.vy = -125; e.hopT = 0.85; }
+      } else {
+        e.vy += GRAV * 0.8 * STEP; e.y += e.vy * STEP;
+        e.x -= 7 * STEP;
+      }
+      if (e.y + e.h > GY && groundAt(e.x + 4)) { e.y = GY - e.h; e.vy = 0; }
+    } else if (e.k === 'o') {
+      e.animT += STEP;
+      e.x += e.vx * STEP;
+      if (groundAt(e.x + 4)) { if (e.y + e.h > GY) { e.y = GY - e.h; e.vy = 0; } }
+      else { e.vy = (e.vy || 0) + GRAV * STEP; e.y += e.vy * STEP; if (e.y > H + 20) { ents.splice(i, 1); continue; } }
+    } else if (e.k === 'oil') {
+      e.ph += STEP; if (e.ph >= OIL_CYCLE) e.ph -= OIL_CYCLE;
+    } else if (e.k === 'item') {
+      e.bob += 4 * STEP;
+    }
+
+    /* ── 衝突 ── */
+    if (e.x + e.w < camX - 8) continue;
+    if (e.k === 'oil') {
+      var ph = e.ph;
+      if (ph >= OIL_IDLE + OIL_WARN) {
+        var prog = (ph - OIL_IDLE - OIL_WARN) / OIL_ERUPT;
+        var hh = Math.round(30 * Math.sin(prog * Math.PI));
+        if (hh > 4) {
+          var ob = { x: e.x + 1, y: GY - hh, w: 6, h: hh };
+          if (aabb(pl, ob)) { if (sauce <= 0) { die('oil'); return; } }
+        }
+      }
+      continue;
+    }
+    var box = { x: e.x, y: e.y, w: e.w, h: e.h };
+    if (!aabb(pl, box)) continue;
+    if (e.k === 'item') {
+      ents.splice(i, 1);
+      collectItem(e);
+      continue;
+    }
+    if (e.k === 'rock') {
+      if (sauce > 0) { ents.splice(i, 1); addScore(50); popText(e.x, e.y - 8, '+50', '#f8b800'); spawnParts(e.x + 6, e.y + 4, 6, '#787878'); sfxStomp(); }
+      else { die('rock'); return; }
+      continue;
+    }
+    /* 敵 */
+    if (sauce > 0) {
+      ents.splice(i, 1); addScore(100); popText(e.x, e.y - 8, '+100', '#f8b800');
+      spawnParts(e.x + 4, e.y + 4, 6, '#b8f818'); sfxStomp();
+      continue;
+    }
+    if (pvy > 0 && prevBottom <= e.y + 5) {
+      /* 踏みつけ */
+      ents.splice(i, 1);
+      var pts = 100 * Math.pow(2, Math.min(stompChain, 4));
+      stompChain++;
+      addScore(pts);
+      popText(e.x, e.y - 10, '+' + pts, stompChain >= 3 ? '#f83800' : '#fcfcfc');
+      spawnParts(e.x + 4, e.y + 4, 6, '#fcfcfc');
+      pvy = (held || jbuf > 0) ? STOMP_VH : STOMP_V;
+      jumps = 1; jbuf = 0;
+      sfxStomp();
+    } else {
+      die('enemy'); return;
+    }
+  }
+
+  /* パーティクル・ポップ・湯気 */
+  updateFx();
+  updateSteamPlay();
+  syncHud();
+}
+
+function aabb(a, b){
+  return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+}
+
+function collectItem(e){
+  addScore(50);
+  popText(e.x, e.y - 8, '+50', '#f8d878');
+  spawnParts(e.x + 4, e.y + 4, 5, '#f8b800');
+  sfxCoin();
+  if (!collected[e.t]) {
+    collected[e.t] = true;
+    var all = collected.every(function(c){ return c; });
+    if (all) {
+      plates++;
+      sauce = 8; /* 先にソースタイム発動（加点前に立てないと×2が乗らない） */
+      addScore(250); /* ×2倍が乗って実質500点 */
+      collected = [false,false,false,false,false];
+      banner();
+      sfxPlate();
+      spawnParts(camX + PX + 8, py + 6, 14, '#f8b800');
+    }
+  }
+  updateHudItems();
+}
+
+function updateFx(){
+  var i;
+  for (i = parts.length - 1; i >= 0; i--) {
+    var p = parts[i];
+    p.t += STEP; p.vy += 300 * STEP;
+    p.x += p.vx * STEP; p.y += p.vy * STEP;
+    if (p.t > p.life) parts.splice(i, 1);
+  }
+  for (i = pops.length - 1; i >= 0; i--) {
+    var q = pops[i];
+    q.t += STEP; q.y -= 18 * STEP;
+    if (q.t > 0.8) pops.splice(i, 1);
+  }
+}
+function updateSteamPlay(){
+  if (rng() === -1) {} /* rngは使わない（決定性維持） */
+  if (Math.random() < 0.10) steam.push({ x: camX + Math.random() * W, y: GY - 2, vy: -10 - Math.random() * 10, t: 0 });
+  stepSteam();
+}
+function updateSteamTitle(){
+  if (Math.random() < 0.08) steam.push({ x: titleCam + Math.random() * W, y: GY - 2, vy: -8 - Math.random() * 8, t: 0 });
+  stepSteam();
+}
+function stepSteam(){
+  for (var i = steam.length - 1; i >= 0; i--) {
+    var s = steam[i];
+    s.t += STEP; s.y += s.vy * STEP;
+    if (s.t > 1.6) steam.splice(i, 1);
+  }
+}
+
+/* ━━━ 死亡（レトロアクション式） ━━━ */
+function die(kind){
+  if (boss) { boss = null; globs = []; hideBossHud(); }
+  state = 'dying';
+  deathKind = kind;
+  deathT = 0;
+  stompChain = 0;
+  sfxDeath();
+}
+function stepDying(){
+  deathT += STEP;
+  updateFx(); stepSteam();
+  if (deathKind === 'fall') {
+    pvy += GRAV * STEP; py += pvy * STEP;
+    if (deathT > 0.9) finishGame();
+    return;
+  }
+  /* 一瞬静止→ぴょこんと跳ねて落下 */
+  if (deathT < 0.4) return;
+  if (deathT < 0.42 && pvy >= 0) pvy = -200;
+  pvy += GRAV * STEP; py += pvy * STEP;
+  if (py > H + 24 || deathT > 1.7) finishGame();
+}
+
+/* ━━━ ボス戦「ベチャゾバーン」 ━━━ */
+function bossHitbox(b){ return { x: b.x + 4, y: b.y + 3, w: 20, h: 20 }; }
+
+function startBoss(){
+  state = 'boss';
+  /* アリーナをソリッド化（穴・残存ハザード・アイテムを除去）。めんたろうは定位置でジャンプ */
+  gaps = []; ents = []; globs = [];
+  jbuf = 0; held = false; coyote = 0;
+  if (!grounded && py + 14 < GY) { /* 空中突入時は最低限そのまま落下→着地 */ }
+  boss = {
+    x: camX + W + 24, y: BOSS_HOVER_Y,
+    hp: BOSS_HP0 + (bossLv - 1), maxHp: BOSS_HP0 + (bossLv - 1),
+    phase: 'intro', t: 0, invuln: 0, flash: 0, spit: 0, vy: 0, frame: 0,
+    round: 0, ofs: Math.floor(rng() * BOSS_PATTERNS), pattern: 0
+  };
+  showBossHud(); syncBossHud();
+  sfxBossWarn();
+  if (AUTOTEST) AT.bossEncounters++;
+}
+
+function stepBoss(){
+  if (!boss) { state = 'play'; return; }
+  var b = boss;
+  b.t += STEP;
+  if (b.invuln > 0 && b.phase !== 'dying') b.invuln -= STEP;
+  if (b.flash > 0) b.flash -= STEP;
+  b.frame = Math.floor(simT * 6) % 2;
+  var pcx = camX + PX + 8;
+
+  /* ── プレイヤー物理（ソリッド床・スクロールなし） ── */
+  if (jbuf > 0) jbuf -= STEP;
+  if (squash > 0) squash -= STEP;
+  tryJump();
+  var prevBottom = py + 14;
+  pvy += GRAV * STEP;
+  if (pvy > 320) pvy = 320;
+  if (!held && pvy < CUT_V) pvy = CUT_V;
+  py += pvy * STEP;
+  if (pvy >= 0 && py + 14 >= GY) {
+    py = GY - 14; pvy = 0;
+    if (!grounded) squash = 0.12;
+    grounded = true; jumps = 0;
+  } else grounded = false;
+  runT += STEP;
+
+  /* ── ボスAI（ラウンド制：攻撃の種類が順繰りで変化＝ワンパターン回避） ── */
+  var hcx = camX + W - 86; /* 漂行の中心x */
+  if (b.phase === 'intro') {
+    b.x += (hcx - b.x) * Math.min(1, 6 * STEP);
+    b.y = BOSS_HOVER_Y;
+    if (b.t >= BOSS_INTRO_T) bossEnterAttack(b, false);
+  } else if (b.phase === 'attack') {
+    bossAttackStep(b, hcx);
+    if (b.t >= BOSS_ATTACK_T) { b.phase = 'telegraph'; b.t = 0; }
+  } else if (b.phase === 'telegraph') {
+    b.x += (pcx - 14 - b.x) * Math.min(1, 5 * STEP);
+    b.y += (BOSS_TELE_Y - b.y) * Math.min(1, 6 * STEP);
+    if (b.t >= BOSS_TELE_T) {
+      /* ダイブ直前に残存投射物を飛沫にして消去＝踏みの窓は常にクリーン（回避と踏みの同時要求を排除） */
+      for (var gi = 0; gi < globs.length; gi++) spawnParts(globs[gi].x, globs[gi].y, 3, '#3cbcfc');
+      globs = [];
+      b.phase = 'expose'; b.t = 0;
+    }
+  } else if (b.phase === 'expose') {
+    /* pattern 3 は露出中に左右へ漂う「動く的」、他は頭上で停止 */
+    var tx = (b.pattern === 3) ? (pcx - 14 + Math.sin(b.t * 2.6) * 34) : (pcx - 14);
+    b.x += (tx - b.x) * Math.min(1, (b.pattern === 3 ? 8 : 5) * STEP);
+    b.y += (BOSS_EXPOSE_Y - b.y) * Math.min(1, 8 * STEP);
+    if (b.t >= BOSS_EXPOSE_T) bossEnterAttack(b, true);
+  } else if (b.phase === 'dying') {
+    b.y += 16 * STEP;
+    if (Math.floor(b.t * 16) % 2 === 0)
+      spawnParts(b.x + 14 + (rng() - 0.5) * 22, b.y + 12 + (rng() - 0.5) * 22, 2, rng() < 0.5 ? '#a4e4fc' : '#3cbcfc');
+    if (b.t >= 1.3) { bossDefeat(); return; }
+  }
+
+  /* ── 踏みつけ（expose時のみ・接触無害） ── */
+  if (b.phase === 'expose' && b.invuln <= 0) {
+    var bb = bossHitbox(b);
+    var pl = { x: pcx - 5, y: py + 1, w: 10, h: 13 };
+    if (pvy > 0 && aabb(pl, bb) && prevBottom <= bb.y + bb.h * 0.7) bossHurt(b);
+  }
+
+  /* ── グロブ更新・被弾（接触＝即死） ── */
+  if (updateGlobs(pcx)) return;
+
+  updateFx();
+  updateSteamPlay();
+  syncBossHud();
+}
+
+function bossHurt(b){
+  b.hp--;
+  b.invuln = 0.7; b.flash = 0.25;
+  pvy = STOMP_VH; jumps = 1; jbuf = 0; stompChain = 0;
+  spawnParts(b.x + 14, b.y + 12, 8, '#a4e4fc');
+  spawnParts(b.x + 14, b.y + 12, 4, '#3cbcfc');
+  popText(b.x + 6, b.y - 4, '+100', '#a4e4fc');
+  scoreF += 100; score = Math.floor(scoreF);
+  sfxBossHit();
+  if (b.hp <= 0) { b.phase = 'dying'; b.t = 0; b.invuln = 99; }
+  else { bossEnterAttack(b, true); b.spit = 1; b.y = BOSS_TELE_Y; } /* 次ラウンドへ・被弾直後は手を1回減らす */
+  syncBossHud();
+}
+
+/* 攻撃ラウンドへ遷移（advance=trueでラウンドを1つ進め攻撃種別を切替） */
+function bossEnterAttack(b, advance){
+  if (advance) b.round++;
+  b.pattern = (b.round + b.ofs) % BOSS_PATTERNS;
+  b.phase = 'attack'; b.t = 0; b.spit = 0;
+}
+
+/* 攻撃ラウンドの中身：パターンごとに漂行の動きと投射を変える */
+function bossAttackStep(b, hcx){
+  var P = b.pattern, lv = bossLv;
+  if (P === 0)      { b.x = hcx + Math.sin(b.t * 1.6) * 46;     b.y = BOSS_HOVER_Y + Math.sin(b.t * 3.2) * 4; }
+  else if (P === 1) { b.x = hcx + Math.sin(b.t * 2.3) * 56;     b.y = BOSS_HOVER_Y + Math.sin(b.t * 4.0) * 3; }
+  else if (P === 2) { b.x = hcx + Math.sin(b.t * 1.9) * 50;     b.y = BOSS_HOVER_Y + Math.sin(b.t * 2.4) * 7; }
+  else              { b.x = hcx + Math.sin(b.t * 1.1 + 1) * 38; b.y = BOSS_HOVER_Y + Math.sin(b.t * 3.0) * 4; }
+  if (P === 0) {            /* 単発（Lv3+で2連） */
+    if (b.spit < (lv >= 3 ? 2 : 1) && b.t >= 0.35 + b.spit * 0.55) { spawnGlob(b, false); b.spit++; }
+  } else if (P === 1) {     /* 連射（2〜3連） */
+    var n1 = lv >= 3 ? 3 : 2;
+    if (b.spit < n1 && b.t >= 0.30 + b.spit * 0.42) { spawnGlob(b, false); b.spit++; }
+  } else if (P === 2) {     /* 玉→べちゃ波 */
+    if (b.spit < 1 && b.t >= 0.35) { spawnGlob(b, false); b.spit++; }
+    else if (b.spit < 2 && b.t >= 0.85) { spawnGlob(b, true); b.spit++; }
+  } else {                  /* ためうち：大玉→(Lv2+)波 */
+    if (b.spit < 1 && b.t >= 0.40) { spawnGlob(b, false); b.spit++; }
+    else if (lv >= 2 && b.spit < 2 && b.t >= 0.95) { spawnGlob(b, true); b.spit++; }
+  }
+}
+
+function bossDefeat(){
+  var bonus = BOSS_BONUS * bossLv;
+  scoreF += bonus; score = Math.floor(scoreF);
+  popText(camX + PX, GY - 64, '+' + bonus, '#f8d878');
+  if (AUTOTEST) AT.bossDefeats++;
+  bossLv++;
+  bossDist = dist + BOSS_INTERVAL;
+  boss = null; globs = [];
+  hideBossHud();
+  bossBanner = 0.5;
+  banner('ベチャゾバーン げきは！');
+  sfxBossDie();
+  lastHudScore = -1;
+  state = 'play';
+  ensureGen();
+}
+
+/* wave=true は地を這う高速の「べちゃ波」（幅広・低い・ジャンプで回避）／false は弧を描く玉。
+   狭いアリーナを露出フェーズ前に通過しきるよう速め設定。残りはexpose突入時に消去（下記） */
+function spawnGlob(b, wave){
+  if (wave) globs.push({ x: b.x + 12, y: GY - 5, vx: -(140 + bossLv * 7), vy: 0, grounded: true, t: 0, wave: true });
+  else      globs.push({ x: b.x + 10, y: b.y + 16, vx: -(98 + bossLv * 6), vy: -30, grounded: false, t: 0, wave: false });
+  sfxSpit();
+}
+
+function updateGlobs(pcx){
+  var GROBY = GY - 5;
+  for (var i = globs.length - 1; i >= 0; i--) {
+    var g = globs[i];
+    g.t += STEP;
+    if (!g.grounded) {
+      g.vy += GRAV * 0.8 * STEP; g.y += g.vy * STEP; g.x += g.vx * STEP;
+      if (g.y >= GROBY) { g.y = GROBY; g.grounded = true; g.vy = 0; }
+    } else {
+      g.x += g.vx * STEP;
+    }
+    if (g.x < camX - 24 || g.t > 6) { globs.splice(i, 1); continue; }
+    var gb = g.wave ? { x: g.x - 6, y: GY - 7, w: 14, h: 7 } : { x: g.x - 3, y: g.y - 4, w: 7, h: 7 };
+    var pl = { x: pcx - 5, y: py + 1, w: 10, h: 13 };
+    if (aabb(pl, gb)) { die('boss'); return true; }
+  }
+  return false;
+}
+
+function showBossHud(){ var e = document.getElementById('bossHud'); if (e) e.classList.remove('hide'); }
+function hideBossHud(){ var e = document.getElementById('bossHud'); if (e) e.classList.add('hide'); }
+function syncBossHud(){
+  if (!boss) return;
+  var lv = document.getElementById('bossHudLv'); if (lv) lv.textContent = 'Lv' + bossLv;
+  var hp = document.getElementById('bossHudHp'); if (!hp) return;
+  var s = '';
+  for (var i = 0; i < boss.maxHp; i++) s += i < boss.hp ? '<span class="on">●</span>' : '<span class="off">●</span>';
+  hp.innerHTML = s;
+}
+
+/* ━━━ 描画 ━━━ */
+var cv = document.getElementById('cv');
+var ctx = cv.getContext('2d');
+ctx.imageSmoothingEnabled = false;
+var renderT = 0;
+
+function render(){
+  renderT += STEP;
+  var cam = state === 'title' ? titleCam : camX;
+  ctx.imageSmoothingEnabled = false;
+  /* 巨大化中の着地シェイク（±2〜3px・約3フレーム） */
+  var shaking = shake > 0;
+  if (shaking) {
+    ctx.fillStyle = '#000';
+    ctx.fillRect(0, 0, W, H); /* ズレ縁の残像防止 */
+    ctx.save();
+    ctx.translate(Math.random() < 0.5 ? -2 : 2, ((Math.random() * 7) | 0) - 3);
+  }
+  /* 空 */
+  ctx.drawImage(skyCv, 0, 0);
+  /* 遠景（山＋鳥居 0.15） */
+  var off = -Math.floor((cam * 0.15) % 512);
+  ctx.drawImage(mtCv, off, GY - 96);
+  ctx.drawImage(mtCv, off + 512, GY - 96);
+  /* 中景（暖簾・提灯 0.45） */
+  off = -Math.floor((cam * 0.45) % 512);
+  ctx.drawImage(stCv, off, GY - 64);
+  ctx.drawImage(stCv, off + 512, GY - 64);
+
+  drawGround(cam);
+  drawSteam(cam);
+
+  if (state !== 'title') {
+    drawEnts(cam);
+    drawGlobs(cam);
+    if (state === 'boss' && boss) drawBoss(cam);
+    drawPlayer();
+    drawFx(cam);
+  } else {
+    drawTitlePlayer();
+  }
+  if (shaking) ctx.restore();
+  /* ボス撃破フラッシュ（シェイク変換の外＝全画面を確実に覆う） */
+  if (bossBanner > 0) {
+    ctx.globalAlpha = Math.min(0.42, bossBanner);
+    ctx.fillStyle = '#fcfcfc'; ctx.fillRect(0, 0, W, H);
+    ctx.globalAlpha = 1;
+  }
+}
+
+function drawGround(cam){
+  var x, wx;
+  for (x = -8; x < W + 8; x += 8) {
+    wx = Math.floor((cam + x) / 8) * 8;
+    var sx = wx - cam;
+    if (state === 'title' || groundAt(wx + 4)) {
+      /* 鉄板 */
+      ctx.fillStyle = '#787878'; ctx.fillRect(sx, GY, 8, 2);
+      ctx.fillStyle = '#404040'; ctx.fillRect(sx, GY + 2, 8, 5);
+      ctx.fillStyle = '#181818'; ctx.fillRect(sx, GY + 7, 8, H - GY - 7);
+      if ((wx / 8) % 6 === 0) { ctx.fillStyle = '#9a9a9a'; ctx.fillRect(sx + 3, GY + 3, 2, 2); }
+    } else {
+      /* 穴：下から炎 */
+      var fl = 6 + Math.floor(4 * Math.abs(Math.sin(renderT * 7 + wx * 0.7)));
+      ctx.fillStyle = '#a81000'; ctx.fillRect(sx, H - fl - 6, 8, fl + 6);
+      ctx.fillStyle = '#e45c10'; ctx.fillRect(sx + 1, H - fl - 2, 6, fl + 2);
+      ctx.fillStyle = '#f8b800'; ctx.fillRect(sx + 3, H - fl + 2, 3, fl);
+      /* 切れ目の壁 */
+      if (groundAt(wx - 4)) { ctx.fillStyle = '#404040'; ctx.fillRect(sx, GY, 1, 10); }
+      if (groundAt(wx + 12)) { ctx.fillStyle = '#404040'; ctx.fillRect(sx + 7, GY, 1, 10); }
+    }
+  }
+}
+
+function drawSteam(cam){
+  ctx.globalAlpha = 0.32;
+  ctx.fillStyle = '#fcfcfc';
+  for (var i = 0; i < steam.length; i++) {
+    var s = steam[i];
+    var sx = Math.floor(s.x - cam);
+    if (sx < -4 || sx > W + 4) continue;
+    var sz = s.t < 0.8 ? 2 : 3;
+    ctx.fillRect(sx, Math.floor(s.y), sz, sz);
+  }
+  ctx.globalAlpha = 1;
+}
+
+function drawEnts(cam){
+  for (var i = 0; i < ents.length; i++) {
+    var e = ents[i];
+    var sx = Math.floor(e.x - cam);
+    if (sx < -20 || sx > W + 20) continue;
+    if (e.k === 'rock') {
+      ctx.drawImage(SPR.rock, sx, GY - 9);
+    } else if (e.k === 'oil') {
+      drawOil(e, sx);
+    } else if (e.k === 'item') {
+      var bobY = Math.floor(e.y + Math.sin(e.bob) * 2);
+      ctx.drawImage(SPR[ITEM_TYPES[e.t]], sx, bobY);
+    } else if (e.k === 'm') {
+      ctx.drawImage(Math.floor(e.animT * 8) % 2 ? SPR.moyashi2 : SPR.moyashi1, sx - 1, Math.floor(e.y) - 1);
+    } else if (e.k === 'p') {
+      var air = e.y + e.h < GY - 1;
+      ctx.save();
+      ctx.translate(sx + 5, Math.floor(e.y) + e.h + 1);
+      if (air) ctx.scale(0.9, 1.1); else ctx.scale(1.1, 0.92);
+      ctx.drawImage(SPR.pepper, -5, -10);
+      ctx.restore();
+    } else if (e.k === 'o') {
+      ctx.drawImage(Math.floor(e.animT * 10) % 2 ? SPR.onion2 : SPR.onion1, sx, Math.floor(e.y) - 1);
+    }
+  }
+}
+
+function drawOil(e, sx){
+  var ph = e.ph;
+  if (ph >= OIL_IDLE && ph < OIL_IDLE + OIL_WARN) {
+    /* 予兆：泡 */
+    var k = Math.floor((ph - OIL_IDLE) * 10);
+    ctx.fillStyle = '#f8b800';
+    ctx.fillRect(sx + 2 + (k % 3), GY - 2 - (k % 2), 2, 2);
+    ctx.fillRect(sx + 5 - (k % 2), GY - 3, 1, 1);
+    ctx.fillStyle = '#fce0a8';
+    ctx.fillRect(sx + 3, GY - 1, 2, 1);
+  } else if (ph >= OIL_IDLE + OIL_WARN) {
+    /* 噴出 */
+    var prog = (ph - OIL_IDLE - OIL_WARN) / OIL_ERUPT;
+    var hh = Math.round(30 * Math.sin(prog * Math.PI));
+    for (var y = 0; y < hh; y += 3) {
+      var w2 = 4 + Math.floor(2 * Math.sin(renderT * 20 + y));
+      ctx.fillStyle = y % 6 ? '#fc9838' : '#f8b800';
+      ctx.fillRect(sx + 4 - (w2 >> 1), GY - y - 3, w2, 3);
+    }
+    ctx.fillStyle = '#fce0a8';
+    ctx.fillRect(sx + 3, GY - hh, 2, 2);
+  }
+  /* 油たまり */
+  ctx.fillStyle = '#9a6a00';
+  ctx.fillRect(sx + 1, GY, 6, 1);
+}
+
+function playerSprite(){
+  var key;
+  if (!grounded) key = 'menJump';
+  else key = Math.floor(runT * 10) % 2 ? 'menRun2' : 'menRun1';
+  if (sauce > 0) {
+    /* 終了間際は点滅 */
+    if (sauce < 1.5 && Math.floor(renderT * 12) % 2) return SPR[key];
+    return MEN_RAINBOW[Math.floor(renderT * 12) % 4][key];
+  }
+  return SPR[key];
+}
+
+function drawPlayer(){
+  var footY = Math.floor(py) + 14;
+  ctx.save();
+  ctx.translate(PX + 8, footY);
+  /* ソースタイム巨大化：足元基準（ボトムセンター）で拡大＝接地位置はズレない */
+  if (pScale !== 1) ctx.scale(pScale, pScale);
+  if (state === 'dying') {
+    ctx.scale(1, -1); /* ひっくり返って落ちる */
+    ctx.drawImage(MEN_BURNT, -8, deathKind === 'fall' ? 0 : -2);
+    ctx.restore();
+    return;
+  }
+  if (squash > 0) ctx.scale(1.25, 0.75);
+  ctx.drawImage(playerSprite(), -8, -14);
+  ctx.restore();
+}
+
+function drawTitlePlayer(){
+  var bob = Math.floor(Math.sin(renderT * 4) * 2);
+  ctx.drawImage(Math.floor(renderT * 3) % 2 ? SPR.menRun2 : SPR.menRun1, PX, GY - 14 + bob);
+}
+
+function drawFx(cam){
+  var i;
+  for (i = 0; i < parts.length; i++) {
+    var p = parts[i];
+    ctx.fillStyle = p.c;
+    ctx.fillRect(Math.floor(p.x - cam), Math.floor(p.y), 2, 2);
+  }
+  for (i = 0; i < pops.length; i++) {
+    var q = pops[i];
+    if (q.t > 0.6 && Math.floor(q.t * 20) % 2) continue;
+    drawPix(ctx, q.str, Math.floor(q.x - cam), Math.floor(q.y), q.c);
+  }
+}
+
+function drawBoss(cam){
+  var b = boss;
+  var sx = Math.floor(b.x - cam), sy = Math.floor(b.y);
+  /* 点滅処理：dying＝高速明滅／被弾無敵＝中速明滅 */
+  if (b.phase === 'dying') { if (Math.floor(simT * 20) % 2) return; }
+  else if (b.invuln > 0 && Math.floor(simT * 30) % 2) return;
+  ctx.drawImage(b.frame ? SPR.boss2 : SPR.boss1, sx, sy);
+  /* telegraph：頭上に赤「！」点滅 */
+  if (b.phase === 'telegraph' && Math.floor(simT * 12) % 2) {
+    ctx.fillStyle = '#f83800';
+    ctx.fillRect(sx + 13, sy - 12, 2, 6);
+    ctx.fillRect(sx + 13, sy - 4, 2, 2);
+  }
+  /* expose：踏めるサイン（下向き黄矢印が頭上で上下） */
+  if (b.phase === 'expose' && b.invuln <= 0) {
+    var ay = sy - 9 + Math.floor(Math.sin(simT * 10) * 2), ax = sx + 14;
+    ctx.fillStyle = '#f8d878';
+    ctx.fillRect(ax - 3, ay, 6, 2);
+    ctx.fillRect(ax - 2, ay + 2, 4, 2);
+    ctx.fillRect(ax - 1, ay + 4, 2, 2);
+  }
+}
+
+function drawGlobs(cam){
+  for (var i = 0; i < globs.length; i++) {
+    var g = globs[i];
+    var sx = Math.floor(g.x - cam), sy = Math.floor(g.y);
+    if (sx < -10 || sx > W + 10) continue;
+    if (g.wave) {
+      /* べちゃ波：地を這う幅広の青い波頭 */
+      var gw = Math.floor(GY);
+      ctx.fillStyle = '#0078f8'; ctx.fillRect(sx - 6, gw - 5, 13, 5);
+      ctx.fillStyle = '#3cbcfc'; ctx.fillRect(sx - 5, gw - 7, 10, 3);
+      ctx.fillStyle = '#a4e4fc'; ctx.fillRect(sx - 3, gw - 8, 4, 2);
+      ctx.fillStyle = '#0078f8'; ctx.fillRect(sx + 5, gw - 9, 1, 3); ctx.fillRect(sx - 6, gw - 8, 1, 2);
+      continue;
+    }
+    ctx.fillStyle = '#0078f8'; ctx.fillRect(sx - 3, sy - 2, 7, 5);
+    ctx.fillStyle = '#3cbcfc'; ctx.fillRect(sx - 2, sy - 3, 5, 3);
+    ctx.fillStyle = '#a4e4fc'; ctx.fillRect(sx - 1, sy - 2, 2, 1);
+    ctx.fillStyle = '#0078f8'; ctx.fillRect(sx - 3, sy + 3, 1, 2); ctx.fillRect(sx + 2, sy + 2, 1, 3);
+  }
+}
+
+/* ━━━ canvasフィット（端末ピクセル整数倍） ━━━ */
+function fitCanvas(){
+  var stage = document.getElementById('stage');
+  var dpr = window.devicePixelRatio || 1;
+  var availW = Math.min(stage.clientWidth || window.innerWidth, 560);
+  /* 端末ピクセル整数倍。dpr=1のみ0.5刻みを許可（小さくなりすぎ防止） */
+  var scale = dpr === 1 ? Math.max(1, Math.floor(availW * 2 / W) / 2)
+                        : Math.max(1, Math.floor(availW * dpr / W));
+  var cssW = scale * W / dpr;
+  cv.style.width = cssW + 'px';
+  cv.style.height = (cssW * H / W) + 'px';
+  ctx.imageSmoothingEnabled = false;
+}
+window.addEventListener('resize', fitCanvas);
+window.addEventListener('orientationchange', fitCanvas);
+
+/* ━━━ DOM ━━━ */
+function $(id){ return document.getElementById(id); }
+var scrCoupon = $('scrCoupon');
+function escapeHtml(t){
+  return String(t).replace(/[&<>"']/g, function(ch){
+    return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[ch];
+  });
+}
+
+/* ━━━ HUD ━━━ */
+var hudIconUrls = [];
+function buildHud(){
+  var wrap = $('hudItems');
+  wrap.innerHTML = '';
+  for (var i = 0; i < 5; i++) {
+    var slot = document.createElement('div');
+    slot.className = 'hud-slot';
+    var img = document.createElement('img');
+    img.alt = ITEM_NAMES[i];
+    img.src = SPR[ITEM_TYPES[i]].toDataURL();
+    slot.appendChild(img);
+    wrap.appendChild(slot);
+  }
+}
+function updateHudItems(){
+  var slots = $('hudItems').children;
+  for (var i = 0; i < slots.length; i++)
+    slots[i].className = 'hud-slot' + (collected[i] ? ' lit' : '');
+}
+var lastHudScore = -1;
+function syncHud(){
+  if (score !== lastHudScore) {
+    $('hudScore').textContent = 'SCORE ' + score;
+    lastHudScore = score;
+  }
+}
+function syncHudBest(){
+  var s = loadStore();
+  var tb = (s.todayBestDate === today() && s.todayBestScore != null) ? s.todayBestScore : null;
+  $('hudBestNum').textContent = tb != null ? tb + '点' : '--';
+}
+
+/* ━━━ 画面切替 ━━━ */
+function uiMode(mode){
+  $('panelTitle').classList.toggle('hide', mode !== 'title');
+  $('panelResult').classList.toggle('hide', mode !== 'result');
+  $('ovlTitle').style.display = mode === 'title' ? '' : 'none';
+  $('ovlGameover').classList.toggle('show', mode === 'result');
+  if (mode !== 'coupon') scrCoupon.classList.remove('show');
+}
+function banner(msg){
+  var b = $('ovlBanner');
+  b.textContent = msg || '一皿完成！ソースタイム!!';
+  b.classList.remove('show');
+  void b.offsetWidth;
+  b.classList.add('show');
+}
+function goFx(){
+  var b = $('ovlGo');
+  b.classList.remove('show');
+  void b.offsetWidth;
+  b.classList.add('show');
+}
+
+/* ━━━ ゲーム開始・終了 ━━━ */
+function startGame(isRetry){
+  audioInit();
+  resetRun();
+  state = 'play';
+  uiMode('play');
+  syncHud(); syncHudBest();
+  goFx();
+  bgmStart();
+  if (!sessionStarted) {
+    sessionStarted = true;
+    track('game_start', { source: srcParam() });
+  }
+  if (isRetry) {
+    retryCount++;
+    track('game_retry', { retry_count: retryCount });
+  }
+}
+
+function finishGame(){
+  state = 'result';
+  curTitle = titleFor(score);
+  track('game_clear', { score: score, title: curTitle.name });
+
+  var s = loadStore();
+  var td = today();
+  if (s.lastPlayDate === td) s.playCountToday = (s.playCountToday || 0) + 1;
+  else { s.playCountToday = 1; }
+  s.lastPlayDate = td;
+
+  var newBest = false, newToday = false;
+  if (s.bestScore == null || score > s.bestScore) { /* 0点も記録（falsy判定禁止） */
+    s.bestScore = score; s.bestTitle = curTitle.name; newBest = true;
+  }
+  if (s.todayBestDate !== td || s.todayBestScore == null || score > s.todayBestScore) {
+    s.todayBestDate = td; s.todayBestScore = score; newToday = true;
+  }
+  saveStore();
+
+  /* クーポン：COUPON_MIN_SCORE以上を達成した当日初回に発行（額面は達成者全員一律50円） */
+  /* 「お1人さま1日1枚まで」：当日に使用済みなら（前日以前発行の券でも・同日発行→使用でも）当日は再発行しない */
+  var issuedNow = false;
+  var reachedCoupon = score >= COUPON_MIN_SCORE;
+  var usedToday = !!(s.couponUsed && typeof s.couponUsedAt === 'number' && ymd(new Date(s.couponUsedAt)) === td);
+  if (reachedCoupon && !usedToday && s.couponIssuedDate !== td && !hasValidCoupon(s)) {
+    s.couponIssuedDate = td;
+    s.couponExpires = addDays(td, 6); /* 発行日を含む7日間 */
+    s.couponUsed = false;
+    s.couponUsedAt = null;
+    s.couponTitle = curTitle.name;
+    s.couponCls = curTitle.cls;
+    saveStore();
+    issuedNow = true;
+    track('coupon_issued', { title: curTitle.name });
+  }
+  if (AUTOTEST) {
+    AT.gameOvers++;
+    if (score > AT.score) AT.score = score;
+    if (issuedNow || hasValidCoupon(loadStore()) || s.couponIssuedDate === td) AT.couponIssued = true;
+  }
+
+  /* リザルトUI */
+  uiMode('result');
+  var rn = $('rankName');
+  rn.textContent = curTitle.name;
+  rn.className = curTitle.cls;
+  $('rankWord').textContent = curTitle.word;
+  var rv = $('rankReveal');
+  rv.classList.remove('show');
+  $('resBests').innerHTML =
+    '今日のベスト <em>' + (+s.todayBestScore || 0) + '点</em>' + (newToday && score > 0 ? '<span class="newrec">更新!</span>' : '') +
+    '<br>自己ベスト <em>' + (+s.bestScore || 0) + '点</em>（' + escapeHtml(s.bestTitle || curTitle.name) + '）' +
+    (newBest && score > 0 ? '<span class="newrec">記録更新!</span>' : '');
+  $('btnCouponRes').innerHTML = couponBtnHtml(loadStore());
+  var sc = loadStore();
+  var hasTodayCoupon = hasValidCoupon(sc) && sc.couponIssuedDate === td;
+  if (usedToday) {
+    $('resCouponNote').textContent = '本日のクーポン発行は終了しました。また明日挑戦してね！';
+  } else if (hasTodayCoupon) {
+    $('resCouponNote').textContent = COUPON_MIN_SCORE.toLocaleString() + '点達成！50円引きクーポンを発行しました';
+  } else {
+    var remCp = Math.max(0, COUPON_MIN_SCORE - score);
+    $('resCouponNote').textContent = '高得点で50円引きクーポン！' + COUPON_MIN_SCORE.toLocaleString() + '点まで あと' + remCp.toLocaleString() + '点';
+  }
+  lastHudScore = -1; syncHud();
+  syncHudBest();
+
+  if (AUTOTEST || SCREEN) {
+    $('resNum').textContent = String(score);
+    rv.classList.add('show');
+  } else {
+    countUp($('resNum'), score, 1000, function(){ rv.classList.add('show'); });
+  }
+  if (issuedNow) sfxCoupon();
+}
+
+function countUp(el, to, dur, done){
+  var t0 = performance.now();
+  el.textContent = '0';
+  function stepFn(t){
+    var p = Math.min(1, (t - t0) / dur);
+    var e = 1 - Math.pow(1 - p, 3);
+    el.textContent = String(Math.round(to * e));
+    if (p < 1) requestAnimationFrame(stepFn);
+    else if (done) done();
+  }
+  requestAnimationFrame(stepFn);
+}
+
+/* ━━━ クーポン ━━━ */
+function hasValidCoupon(s){
+  return !!(isYmd(s.couponIssuedDate) && !s.couponUsed && isYmd(s.couponExpires) && s.couponExpires >= today());
+}
+function couponBtnLabel(s){
+  if (s.couponIssuedDate === today()) return s.couponUsed ? '本日のクーポンを確認' : '50円引きクーポンを表示';
+  if (hasValidCoupon(s)) return '発行済みクーポンを表示';
+  return 'クーポンについて';
+}
+function couponBtnHtml(s){
+  return icoHtml('ticket') + ' ' + couponBtnLabel(s);
+}
+function refreshCouponButtons(){
+  var s = loadStore();
+  $('btnCouponRes').innerHTML = couponBtnHtml(s);
+  var bt = $('btnCouponTitle');
+  if (hasValidCoupon(s) || s.couponIssuedDate === today()) {
+    bt.classList.remove('hide');
+    bt.innerHTML = couponBtnHtml(s);
+  } else {
+    bt.classList.add('hide');
+  }
+}
+function refreshTitlePanel(){
+  var s = loadStore();
+  var tb = (s.todayBestDate === today() && s.todayBestScore != null) ? s.todayBestScore : null;
+  var html = '';
+  if (s.bestScore != null) html += '自己ベスト <em>' + (+s.bestScore || 0) + '点</em>（' + escapeHtml(s.bestTitle || '見習い') + '）';
+  if (tb != null) html += (html ? '　' : '') + '今日 <em>' + tb + '点</em>';
+  $('titleBest').innerHTML = html || 'はじめての挑戦、待っとーよ！';
+  refreshCouponButtons();
+  syncHudBest();
+}
+
+function showCoupon(){
+  renderCoupon();
+  scrCoupon.classList.add('show');
+  scrCoupon.scrollTop = 0;
+}
+function closeCoupon(){
+  scrCoupon.classList.remove('show');
+  refreshTitlePanel();
+  refreshCouponButtons();
+}
+
+function couponTicketHtml(s){
+  var issued = s.couponIssuedDate;
+  var expires = isYmd(s.couponExpires) ? s.couponExpires : addDays(issued, 6);
+  var spanDays = diffDays(issued, expires) + 1; /* 発行日を含む日数 */
+  var wm = fmtWm(issued);
+  var badgeCls = /^t[1-5]$/.test(s.couponCls || '') ? s.couponCls : 't1';
+  return '' +
+    '<div class="cp-card">' +
+      '<div class="cp-wm"><span>' + wm + '　' + wm + '</span><span>' + wm + '　' + wm + '</span><span>' + wm + '　' + wm + '</span></div>' +
+      '<div class="cp-in">' +
+        '<p class="cp-shop">想夫恋 宇美店</p>' +
+        '<p class="cp-game">カリカリダッシュ ハイスコア特典</p>' +
+        '<p class="cp-amount">お会計から<br>50円引き<small>（税込）</small></p>' +
+        '<p class="cp-all">50,000点達成おめでとう！</p>' +
+        '<br><span class="cp-flame">🔥</span>' +
+        '<p class="cp-flame-note">この炎が動いていれば本物です</p>' +
+        '<p><span class="cp-badge ' + badgeCls + '">称号：' + escapeHtml(s.couponTitle || '見習い') + '</span></p>' +
+        '<p class="cp-badge-note">※割引額は称号に関わらず一律50円です</p>' +
+        '<div class="cp-dates">発行日：' + fmtJP(issued) + '<br>' +
+          '<span class="exp">' + fmtJP(expires) + 'まで</span>（発行日を含む' + spanDays + '日間）</div>' +
+        '<div class="cp-rules">' +
+          '<p>・宇美店でのみご利用いただけます</p>' +
+          '<p>・お1人さま1日1枚まで</p>' +
+          '<p>・他のクーポン・割引券との併用はできません</p>' +
+          '<p>・お会計時にこの画面をスタッフへご提示ください</p>' +
+          '<p>・予告なく内容の変更・終了をする場合があります</p>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+}
+
+function renderCoupon(overrideStore){
+  var s = overrideStore || loadStore();
+  var body = $('cpBody');
+
+  if (!storageOK && !overrideStore) {
+    /* localStorage不可：表示のみのフォールバック */
+    body.innerHTML =
+      couponTicketHtml({ couponIssuedDate: today(), couponExpires: addDays(today(), 6), couponTitle: curTitle ? curTitle.name : '見習い', couponCls: curTitle ? curTitle.cls : 't1' }) +
+      '<p class="cp-state-text" style="margin-top:12px;">お使いのブラウザでは保存ができないため、<br><strong style="color:var(--acc2)">この画面をそのままスタッフへ</strong>お見せください。</p>' +
+      '<button id="cpBack" type="button" class="btn btn-ghost">もどる</button>';
+    $('cpBack').addEventListener('click', closeCoupon);
+    return;
+  }
+
+  if (!isYmd(s.couponIssuedDate)) {
+    body.innerHTML =
+      '<div class="cp-state"><span class="cp-state-icon">' + icoHtml('pan', 'px-ico-lg') + '</span>' +
+      '<p class="cp-state-title">まだ走っていません</p>' +
+      '<p class="cp-state-text">50,000点を達成すると<br>「お会計から50円引き」クーポンを発行します！</p></div>' +
+      '<button id="cpPlay" type="button" class="btn">' + icoHtml('flame') + ' いますぐ走る</button>' +
+      '<button id="cpBack" type="button" class="btn btn-ghost">もどる</button>';
+    $('cpPlay').addEventListener('click', function(){ closeCoupon(); startGame(false); });
+    $('cpBack').addEventListener('click', closeCoupon);
+    return;
+  }
+
+  if (s.couponUsed) {
+    var usedWhen = '';
+    if (typeof s.couponUsedAt === 'number') {
+      var ud = new Date(s.couponUsedAt);
+      usedWhen = ud.getFullYear() + '/' + ('0' + (ud.getMonth() + 1)).slice(-2) + '/' + ('0' + ud.getDate()).slice(-2) +
+        ' ' + ('0' + ud.getHours()).slice(-2) + ':' + ('0' + ud.getMinutes()).slice(-2);
+    }
+    body.innerHTML =
+      '<div class="cp-used-full">' +
+        '<span class="cp-used-mark">使用済み</span>' +
+        (usedWhen ? '<p class="cp-used-when">使用日時：' + usedWhen + '</p>' : '') +
+        '<p class="cp-used-msg">ご来店ありがとうございました！<br>また明日、50,000点達成で発行できます。</p>' +
+      '</div>' +
+      '<button id="cpPlay" type="button" class="btn">▶ スコアアタックで遊ぶ</button>' +
+      '<button id="cpBack" type="button" class="btn btn-ghost">もどる</button>';
+    $('cpPlay').addEventListener('click', function(){ closeCoupon(); startGame(false); });
+    $('cpBack').addEventListener('click', closeCoupon);
+    return;
+  }
+
+  if (!hasValidCoupon(s)) {
+    body.innerHTML =
+      '<div class="cp-state"><span class="cp-state-icon">' + icoHtml('hourglass', 'px-ico-lg') + '</span>' +
+      '<p class="cp-state-title">有効期限が切れています</p>' +
+      '<p class="cp-state-text">もう1回挑戦！50,000点達成で<br>今日の分を新しく発行できます。</p></div>' +
+      '<button id="cpPlay" type="button" class="btn">' + icoHtml('flame') + ' いますぐ走る</button>' +
+      '<button id="cpBack" type="button" class="btn btn-ghost">もどる</button>';
+    $('cpPlay').addEventListener('click', function(){ closeCoupon(); startGame(false); });
+    $('cpBack').addEventListener('click', closeCoupon);
+    return;
+  }
+
+  body.innerHTML =
+    couponTicketHtml(s) +
+    '<button id="cpUse" type="button" class="btn btn-use">スタッフの前でタップ → 使用する</button>' +
+    '<p class="cp-state-text" style="text-align:center;margin-top:6px;">※お会計のときに、スタッフの目の前で押してください</p>' +
+    '<button id="cpBack" type="button" class="btn btn-ghost">もどる</button>';
+  $('cpUse').addEventListener('click', function(){ $('modal').classList.add('show'); });
+  $('cpBack').addEventListener('click', closeCoupon);
+}
+
+function useCoupon(){
+  var s = loadStore();
+  if (!hasValidCoupon(s)) { renderCoupon(); return; }
+  s.couponUsed = true;
+  s.couponUsedAt = Date.now();
+  saveStore();
+  track('coupon_used', { days_since_issued: diffDays(s.couponIssuedDate, today()) });
+  renderCoupon();
+  scrCoupon.scrollTop = 0;
+}
+
+/* ━━━ 入力バインド ━━━ */
+function bindInput(){
+  var stage = $('stage');
+  stage.addEventListener('pointerdown', function(e){
+    e.preventDefault();
+    audioInit();
+    if (AC && AC.state === 'suspended') { try { AC.resume(); } catch(err){} }
+    if (state === 'title') { startGame(false); return; }
+    if (state === 'play' || state === 'boss') pressJump();
+  });
+  window.addEventListener('pointerup', function(){ releaseJump(); });
+  window.addEventListener('pointercancel', function(){ releaseJump(); });
+  window.addEventListener('keydown', function(e){
+    if (e.repeat) return;
+    if (e.code === 'Space' || e.code === 'ArrowUp') {
+      e.preventDefault();
+      audioInit();
+      if (state === 'title') { startGame(false); return; }
+      if (state === 'play' || state === 'boss') pressJump();
+    }
+  });
+  window.addEventListener('keyup', function(e){
+    if (e.code === 'Space' || e.code === 'ArrowUp') releaseJump();
+  });
+
+  $('btnRetry').addEventListener('pointerdown', function(e){
+    e.stopPropagation(); e.preventDefault();
+    if (state === 'result') startGame(true); /* ワンタップ即リトライ */
+  });
+  $('btnCouponRes').addEventListener('click', function(){ showCoupon(); });
+  $('btnCouponTitle').addEventListener('click', function(){ showCoupon(); });
+  $('btnMute').addEventListener('pointerdown', function(e){ e.stopPropagation(); });
+  $('btnMute').addEventListener('click', function(e){
+    e.stopPropagation();
+    audioInit();
+    setMuted(!muted);
+  });
+  $('mdYes').addEventListener('click', function(){
+    $('modal').classList.remove('show');
+    useCoupon();
+  });
+  $('mdNo').addEventListener('click', function(){ $('modal').classList.remove('show'); });
+  $('telLink').addEventListener('click', function(){ track('phone_call', { place: 'game_result' }); });
+}
+
+/* ━━━ 自動プレイボット（autotest用・1割わざとミス） ━━━ */
+var botHold = 0, botResultWait = 0, botSuicide = false;
+function botStep(){
+  if (state === 'result') {
+    botResultWait += STEP;
+    if (botResultWait > 0.5) { botResultWait = 0; startGame(true); }
+    return;
+  }
+  if (state === 'title') { startGame(false); return; }
+  if (state === 'boss') { botBossStep(); return; }
+  if (state !== 'play') return;
+
+  if (botHold > 0) { botHold -= STEP; if (botHold <= 0) releaseJump(); }
+  if (AT.simSeconds > 25 && AT.gameOvers === 0) botSuicide = true;
+  if (botSuicide) return; /* 確実に1回は死ぬ */
+
+  var pcx = camX + PX + 8;
+  var v = speed * (sauce > 0 ? 1.5 : 1);
+
+  /* 空中：穴の上で落下中なら2段ジャンプ */
+  if (!grounded) {
+    if (pvy > 20 && jumps < 2 && !(groundAt(pcx + 6) && groundAt(pcx + 14))) {
+      pressJump(); botHold = 0.18;
+    }
+    return;
+  }
+
+  var look = 12 + v * 0.30;
+  var trigger = 6 + v * 0.22;
+  var i, hz = null, hzDist = 1e9;
+
+  /* 穴 */
+  for (i = 0; i < gaps.length; i++) {
+    var d = gaps[i].a - pcx;
+    if (d > -4 && d < look && d < hzDist) { hz = gaps[i]; hzDist = d; }
+  }
+  /* 障害物・敵 */
+  for (i = 0; i < ents.length; i++) {
+    var e = ents[i];
+    if (e.k === 'item') continue;
+    if (e.k === 'oil' && e.ph < OIL_IDLE * 0.6) continue; /* 静かな油は無視 */
+    var d2 = e.x - pcx;
+    if (d2 > 2 && d2 < look && d2 < hzDist) { hz = e; hzDist = d2; }
+  }
+  if (!hz) return;
+  if (!hz.seen) {
+    hz.seen = true;
+    if (rng() < 0.10) hz.skip = true; /* 意図的ミス */
+  }
+  if (hz.skip) return;
+  if (sauce > 0 && hz.k && hz.k !== 'oil' && hz.a == null) return; /* 無敵中は突っ込む */
+  if (hzDist < trigger) { pressJump(); botHold = 0.18; }
+}
+
+/* ボス戦ボット：グロブを跳び越し、expose中に踏む */
+function botBossStep(){
+  if (!boss) return;
+  if (botHold > 0) { botHold -= STEP; if (botHold <= 0) releaseJump(); }
+  var pcx = camX + PX + 8;
+  /* 1) 接近する「地上付近の投射物」を最優先で跳び越す（波は高速ゆえ早めに） */
+  var nd = 1e9, nWave = false;
+  for (var i = 0; i < globs.length; i++) {
+    var g = globs[i];
+    if (!(g.grounded || g.y > GY - 18)) continue; /* 空中で弧の途中の玉はまだ脅威でない */
+    var d = g.x - pcx;
+    if (d > -8 && d < nd) { nd = d; nWave = !!g.wave; }
+  }
+  var dodgeTrig = nWave ? 30 : 20;
+  if (grounded && nd < dodgeTrig) { pressJump(); botHold = nWave ? 0.20 : 0.17; return; }
+  /* 2) expose中：ボスが頭上に来たらジャンプ→落下で踏む（pattern3の動く的にも追従） */
+  var b = boss;
+  if (b.phase === 'expose' && b.invuln <= 0 && grounded && nd > 34) {
+    if (Math.abs(b.x + 14 - pcx) < 18) { pressJump(); botHold = 0.20; }
+  }
+}
+
+function checkATEnd(){
+  if (AT.done) return;
+  AT.simSeconds = Math.round(AT.frames / 60 * 100) / 100;
+  /* ボス撃破＋通常ゲームオーバー（クーポン）の双方を確認したら正常終了。90秒で強制打切り（＝ボス未撃破の失敗シグナル） */
+  var ok = AT.bossDefeats >= 1 && AT.gameOvers >= 1 && AT.simSeconds >= 20;
+  if (ok || AT.simSeconds >= 90) {
+    AT.done = true;
+    if (score > AT.score) AT.score = score;
+    var el = document.getElementById('autotest-result');
+    el.textContent = JSON.stringify(AT);
+  }
+}
+
+/* ━━━ メインループ（rAF＋固定タイムステップ・accumulator） ━━━ */
+var last = 0, acc = 0;
+function frameAuto(){
+  /* autotest：仮想時間下でrAFが進まない環境があるためsetTimeout駆動 */
+  if (!AT.done) {
+    for (var i = 0; i < 10 && !AT.done; i++) {
+      botStep();
+      step();
+      AT.frames++;
+      checkATEnd();
+    }
+    setTimeout(frameAuto, 4);
+  }
+  render();
+}
+function frame(ts){
+  requestAnimationFrame(frame);
+  if (freeze) return;
+  if (!last) last = ts;
+  var dt = Math.min((ts - last) / 1000, 0.1); /* タブ復帰時の暴走防止クランプ */
+  last = ts;
+  acc += dt;
+  var n = 0;
+  while (acc >= STEP && n < 6) { step(); acc -= STEP; n++; }
+  if (n === 6) acc = 0;
+  render();
+}
+
+/* ━━━ ?screen= 即時表示（スクリーンショット用） ━━━ */
+function applyScreenParam(){
+  if (SCREEN === 'play') {
+    startGame(false);
+    for (var i = 0; i < 360; i++) { botStep(); step(); } /* 6秒分進める */
+    render();
+    freeze = true;
+    return;
+  }
+  if (SCREEN === 'sauce') {
+    /* ソースタイム（巨大化）発動中のプレイ状態を即表示：QA用 */
+    startGame(false);
+    for (var s1 = 0; s1 < 240; s1++) { botStep(); step(); } /* 4秒分の助走 */
+    sauce = 8; /* 5具材コンプ相当の発動を再現 */
+    /* 変身トランジション完了（30step）後、接地姿勢になるまで進める（足元アンカーのQA用・上限5秒） */
+    for (var s2 = 0; (s2 < 30 || !grounded) && s2 < 300 && state === 'play'; s2++) { botStep(); step(); }
+    shake = 0; /* 静止画が着地シェイクでズレないように */
+    render();
+    freeze = true;
+    return;
+  }
+  if (SCREEN === 'over') {
+    startGame(false);
+    for (var j = 0; j < 200; j++) { botStep(); step(); }
+    scoreF = 4280; score = 4280;
+    die('rock');
+    while (state === 'dying') step();
+    render();
+    freeze = true;
+    return;
+  }
+  if (SCREEN === 'boss') {
+    startGame(false);
+    dist = bossDist; /* 出現条件を満たす */
+    for (var bi = 0; bi < 1200 && state !== 'boss'; bi++) step();
+    /* expose（踏める瞬間）まで進める。グロブはQA用に都度消して静止画を安定させる */
+    for (var bj = 0; bj < 800 && !(boss && boss.phase === 'expose'); bj++) { step(); globs = []; }
+    /* 低所に着地しきった露出ポーズへ（約0.5秒進める） */
+    for (var bk = 0; bk < 30 && boss && boss.phase === 'expose'; bk++) { step(); globs = []; }
+    render();
+    freeze = true;
+    return;
+  }
+  if (SCREEN === 'coupon') {
+    renderCoupon({
+      couponIssuedDate: today(), couponExpires: addDays(today(), 6),
+      couponUsed: false, couponTitle: '職人', couponCls: 't3'
+    });
+    /* デバッグ表示は券面に「SAMPLE／見本」を重ねて実物と判別可能にする */
+    var smCard = scrCoupon.querySelector('.cp-card');
+    if (smCard) {
+      var sm = document.createElement('div');
+      sm.className = 'cp-sample';
+      sm.innerHTML = '<span>SAMPLE<br>見本</span>';
+      smCard.appendChild(sm);
+    }
+    scrCoupon.classList.add('show');
+    return;
+  }
+}
+
+/* ━━━ 起動 ━━━ */
+function init(){
+  buildSprites();
+  buildUiIcons();
+  buildBg();
+  buildHud();
+  fitCanvas();
+  bindInput();
+  refreshTitlePanel();
+  uiMode('title');
+  $('btnMute').innerHTML = icoHtml(muted ? 'spkOff' : 'spkOn');
+  /* テスト専用フック（?autotest/?screen時のみ露出。本番visitorには出ない） */
+  if (TEST_MODE) {
+    window.__kk = {
+      start: function(){ startGame(false); },
+      setFreeze: function(v){ freeze = !!v; },
+      setBossLv: function(n){ bossLv = n | 0; },
+      forceBoss: function(){ dist = bossDist; },
+      stepN: function(n){ for (var i = 0; i < (n | 0); i++) { botStep(); step(); } },
+      stepIdle: function(n){ for (var i = 0; i < (n | 0); i++) { step(); } },
+      clearGlobs: function(){ globs = []; },
+      tap: function(){ pressJump(); },
+      release: function(){ releaseJump(); },
+      setScore: function(n){ scoreF = n; score = Math.floor(n); },
+      finish: function(){ finishGame(); },
+      clearStore: function(){ try { localStorage.removeItem(KEY); } catch(e){} store = null; },
+      get couponInfo(){ var s = loadStore(); return { issuedToday: s.couponIssuedDate === today(), hasValid: hasValidCoupon(s) }; },
+      render: function(){ render(); },
+      get state(){ return state; },
+      get bossLv(){ return bossLv; },
+      get globs(){ return globs.length; },
+      get boss(){ return boss ? { hp: boss.hp, maxHp: boss.maxHp, phase: boss.phase, pattern: boss.pattern, round: boss.round } : null; },
+      get grounded(){ return grounded; },
+      get py(){ return py; },
+      globsDetail: function(){ var p = camX + PX + 8; return globs.map(function(g){ return { dx: Math.round(g.x - p), y: Math.round(g.y), w: g.wave ? 1 : 0, gr: g.grounded ? 1 : 0 }; }); },
+      get bossHudHidden(){ var e = document.getElementById('bossHud'); return !e || e.classList.contains('hide'); },
+      get AT(){ return AT; }
+    };
+  }
+  if (SCREEN) { applyScreenParam(); }
+  if (AUTOTEST) frameAuto();
+  else requestAnimationFrame(frame);
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+else init();
+
+})();
+</script>
+</body>
+</html>

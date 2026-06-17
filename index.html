@@ -903,10 +903,12 @@
     .cta-section h2 .sm { font-size: 0.78em; color: var(--text-light); }
     .cta-section h2 .accent { color: var(--red-lt); }
     .cta-section p { font-size: 0.88rem; color: var(--text-mid); margin-bottom: 44px; line-height: 1.8; }
-    .cta-cards { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+    .cta-cards { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; max-width: 1000px; margin: 0 auto; }
     .cta-card {
       background: #FFFFFF; border: 1px solid var(--border);
       border-radius: 10px; padding: 30px 36px; min-width: 230px;
+      /* 5枚を「3+2」で折り返す（1枚孤立を防止） */
+      flex: 0 1 calc((100% - 40px) / 3); max-width: 320px;
       text-decoration: none; transition: all 0.3s;
       box-shadow: 0 2px 12px var(--shadow);
     }
@@ -919,6 +921,70 @@
     /* ★ LINE カードのmainテキストはグリーン */
     .cta-card.line-card .cta-card-main { color: var(--line-green); }
     .cta-card-sub { font-size: 0.72rem; color: var(--text-light); margin-top: 5px; display: block; }
+
+    /* ━━━━━━━━━━━━━━━━━━━━━━
+       GAME BANNER（カリカリダッシュ 〜走れ！めんたろう〜）
+    ━━━━━━━━━━━━━━━━━━━━━━ */
+    .game-banner-wrap { padding: 0 80px 96px; background: var(--warm-white); }
+    .game-banner {
+      position: relative; display: flex; align-items: center; gap: 30px;
+      max-width: 880px; margin: 0 auto; padding: 34px 40px;
+      background: linear-gradient(120deg, #2E2115 0%, #4A3522 58%, var(--brown-deep) 100%);
+      border-radius: 14px; text-decoration: none; overflow: hidden;
+      box-shadow: 0 6px 24px rgba(58,42,26,0.28);
+      transition: transform .3s, box-shadow .3s;
+    }
+    .game-banner::before { /* 8bitレトロ風：CRTスキャンライン（CSSのみ） */
+      content: ''; position: absolute; inset: 0;
+      background: repeating-linear-gradient(0deg, rgba(0,0,0,0.14) 0 2px, transparent 2px 4px);
+      opacity: .4; pointer-events: none;
+    }
+    .game-banner::after { /* 鉄板の照り：右上に寄せた非対称ハイライト */
+      content: ''; position: absolute; top: -70px; right: -40px;
+      width: 240px; height: 240px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,200,120,0.18), transparent 65%);
+      pointer-events: none;
+    }
+    .game-banner:hover { transform: translateY(-3px); box-shadow: 0 12px 32px rgba(58,42,26,0.38); }
+    .game-banner .eyebrow { color: var(--brown-lt); margin-bottom: 8px; }
+    .game-banner .eyebrow::before, .game-banner .eyebrow::after { background: var(--brown-lt); }
+    .game-banner-teppan {
+      position: relative; flex-shrink: 0;
+      width: 88px; height: 88px; border-radius: 50%;
+      background: radial-gradient(circle at 32% 28%, #5A4630, #1C1410 74%);
+      border: 2px solid rgba(200,168,130,0.35);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: inset 0 3px 8px rgba(0,0,0,0.55);
+    }
+    .game-banner-kanji {
+      font-family: 'Noto Serif JP', serif; font-size: 2rem; font-weight: 900;
+      color: var(--red-lt);
+      animation: sizzle 1.2s steps(2, jump-none) infinite; /* steps()で8bit風のカクつき */
+      text-shadow: 2px 2px 0 rgba(0,0,0,0.55); /* ドット絵風のハードシャドウ */
+    }
+    .game-banner-flame { position: absolute; font-size: 0.85rem; animation: blink 1.5s ease-in-out infinite; }
+    .game-banner-flame.f1 { top: -9px; left: 10px; }
+    .game-banner-flame.f2 { top: -13px; right: 14px; animation-delay: .5s; }
+    .game-banner-flame.f3 { bottom: -5px; right: -3px; animation-delay: .9s; font-size: 0.7rem; }
+    .game-banner-body { flex: 1; position: relative; }
+    .game-banner-title {
+      font-family: 'Noto Serif JP', serif; font-weight: 900;
+      font-size: clamp(1.05rem, 2.2vw, 1.5rem); color: #FEFCF8; line-height: 1.5;
+    }
+    .game-banner-title .sm { font-size: 0.72em; color: var(--brown-lt); }
+    .game-banner-title .seg { display: inline-block; } /* 折り返しは語単位のみ（1文字落ち防止） */
+    .game-banner-sub { font-size: 0.8rem; color: rgba(254,252,248,0.8); margin-top: 8px; line-height: 1.8; }
+    .game-banner-btn { /* レトロゲーム風の角ばったボタン＋ハードシャドウ */
+      position: relative; flex-shrink: 0; display: inline-block;
+      padding: 14px 30px; background: var(--red); color: #fff;
+      border-radius: 4px; font-size: 0.88rem; font-weight: 700; letter-spacing: 0.06em;
+      box-shadow: 0 4px 0 rgba(94,22,15,0.9); transition: background .3s, transform .15s, box-shadow .15s;
+    }
+    .game-banner:hover .game-banner-btn { background: var(--red-lt); transform: translateY(2px); box-shadow: 0 2px 0 rgba(94,22,15,0.9); }
+    @media (max-width: 960px) {
+      .game-banner-wrap { padding: 0 28px 72px; }
+      .game-banner { flex-direction: column; text-align: center; gap: 20px; padding: 32px 24px; }
+    }
 
     /* ━━━━━━━━━━━━━━━━━━━━━━
        FOOTER
@@ -988,7 +1054,7 @@
       .footer-bottom { flex-direction: column; gap: 8px; text-align: center; }
       /* モバイルのCTAカードを縦並び */
       .cta-cards { flex-direction: column; align-items: center; }
-      .cta-card { width: 100%; max-width: 360px; min-width: unset; }
+      .cta-card { width: 100%; max-width: 360px; min-width: unset; flex: 0 1 auto; }
     }
     @media (max-width: 480px) {
       .menu-grid { grid-template-columns: 1fr; }
@@ -1524,6 +1590,24 @@
   </div>
 </section>
 
+<!-- GAME BANNER（カリカリダッシュ 〜走れ！めんたろう〜） -->
+<section class="game-banner-wrap">
+  <a href="game/?src=index_banner" class="game-banner reveal">
+    <div class="game-banner-teppan" aria-hidden="true">
+      <span class="game-banner-kanji">走</span>
+      <span class="game-banner-flame f1">🔥</span>
+      <span class="game-banner-flame f2">🔥</span>
+      <span class="game-banner-flame f3">🔥</span>
+    </div>
+    <div class="game-banner-body">
+      <div class="eyebrow">GAME</div>
+      <p class="game-banner-title">🕹️ <span class="seg">ドット絵<span class="sm">の</span></span><span class="seg">焼きそばアクション</span></p>
+      <p class="game-banner-sub">カリカリダッシュ 〜走れ！めんたろう〜｜焼きそばヒーロー「めんたろう」が鉄板の上を駆け抜ける横スクロールアクション。ハイスコア36,000点を達成すると、お会計50円引きクーポンをプレゼント。</p>
+    </div>
+    <span class="game-banner-btn">遊んでみる →</span>
+  </a>
+</section>
+
 <!-- TAKEOUT -->
 <section class="takeout-section" id="takeout">
   <div class="takeout-inner">
@@ -1892,6 +1976,15 @@
 
     <div style="display:grid;gap:18px;margin-top:36px;text-align:left;">
 
+      <a href="game/?src=news_top" style="display:block;padding:22px 24px;background:#fff;border:1px solid var(--border);border-radius:8px;text-decoration:none;color:inherit;transition:.22s cubic-bezier(.25,.46,.45,.94);">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <span style="font-family:'Noto Serif JP',serif;font-size:0.78rem;color:var(--brown-deep);letter-spacing:0.08em;">2026.06.12</span>
+          <span style="font-size:0.68rem;color:#fff;background:var(--red);padding:2px 10px;border-radius:999px;letter-spacing:0.08em;">ゲーム</span>
+        </div>
+        <p style="font-family:'Noto Serif JP',serif;font-size:1.02rem;font-weight:700;color:var(--ink);line-height:1.6;">焼きそばアクションゲーム『カリカリダッシュ』公開！遊んでクーポンGET</p>
+        <p style="font-size:0.84rem;color:var(--text-mid);margin-top:6px;">8bitレトロなドット絵の横スクロールアクション。焼きそばヒーロー「めんたろう」が鉄板を走り、べちゃ麺の魔王ベチャゾバーンに挑む！ハイスコア36,000点達成でお会計50円引きクーポン。🕹️</p>
+      </a>
+
       <a href="news/#news-2026-05-03" style="display:block;padding:22px 24px;background:#fff;border:1px solid var(--border);border-radius:8px;text-decoration:none;color:inherit;transition:.22s cubic-bezier(.25,.46,.45,.94);">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
           <span style="font-family:'Noto Serif JP',serif;font-size:0.78rem;color:var(--brown-deep);letter-spacing:0.08em;">2026.05.03</span>
@@ -1995,6 +2088,13 @@
       <span class="cta-card-label">公式LINEはこちら</span>
       <span class="cta-card-main">LINE で営業日確認</span>
       <span class="cta-card-sub">営業日カレンダー・お知らせ配信中</span>
+    </a>
+    <!-- ★ GAME カード追加 -->
+    <a href="game/?src=cta_card" class="cta-card">
+      <span class="cta-card-icon">🕹️</span>
+      <span class="cta-card-label">GAME</span>
+      <span class="cta-card-main">カリカリダッシュ</span>
+      <span class="cta-card-sub">ドット絵アクションでクーポンGET</span>
     </a>
   </div>
 </section>

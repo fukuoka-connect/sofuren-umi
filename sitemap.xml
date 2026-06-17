@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://fukuoka-connect.github.io/sofuren-umi/</loc>
-    <lastmod>2026-05-03</lastmod>
+    <lastmod>2026-06-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
@@ -31,8 +31,14 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://fukuoka-connect.github.io/sofuren-umi/game/</loc>
+    <lastmod>2026-06-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://fukuoka-connect.github.io/sofuren-umi/news/</loc>
-    <lastmod>2026-05-03</lastmod>
+    <lastmod>2026-06-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>

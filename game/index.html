@@ -257,7 +257,7 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:0;}
       <p><span class="ico"><img class="px-ico" data-ico="djump" alt=""></span><span>空中でもう1回タップ＝2段ジャンプ</span></p>
       <p><span class="ico"><img class="px-ico" data-ico="pan" alt=""></span><span>敵は上から踏める！具材5つ集めて一皿完成</span></p>
     </div>
-    <div class="note-all"><strong>50,000点</strong>達成で<br><strong>「お会計から50円引き」</strong>クーポン進呈！</div>
+    <div class="note-all"><strong>36,000点</strong>達成で<br><strong>「お会計から50円引き」</strong>クーポン進呈！</div>
     <div class="best-line" id="titleBest"></div>
     <button id="btnCouponTitle" type="button" class="btn btn-coupon hide">クーポンを表示</button>
     <div class="shop-mini">
@@ -292,7 +292,7 @@ button{font-family:inherit;cursor:pointer;border:none;border-radius:0;}
     </div>
   </div>
 
-  <p class="seo-foot">「カリカリダッシュ 〜走れ！めんたろう〜」は、創業39年・日田焼きそば専門店「想夫恋 宇美店」（福岡県糟屋郡宇美町）の公式ミニゲームです。焼きそばのヒーロー「めんたろう」が鉄板の上を駆け抜けるドット絵のレトロな横スクロールアクション。ハイスコア（50,000点）を達成すると「お会計から50円引き」クーポンをプレゼントしています（宇美店のみ・1日1枚）。</p>
+  <p class="seo-foot">「カリカリダッシュ 〜走れ！めんたろう〜」は、創業39年・日田焼きそば専門店「想夫恋 宇美店」（福岡県糟屋郡宇美町）の公式ミニゲームです。焼きそばのヒーロー「めんたろう」が鉄板の上を駆け抜けるドット絵のレトロな横スクロールアクション。ハイスコア（36,000点）を達成すると「お会計から50円引き」クーポンをプレゼントしています（宇美店のみ・1日1枚）。</p>
   <p class="copy-foot">© 想夫恋 宇美店</p>
 </div>
 
@@ -1033,6 +1033,7 @@ function buildBg(){
   /* 中景：店先（暖簾・提灯）シルエット（512px・パララックス0.45） */
   stCv = document.createElement('canvas'); stCv.width = 512; stCv.height = 64;
   g = stCv.getContext('2d');
+  var SIGN_TEXTS = ['想夫恋', '宇美町', '想夫恋', '宇美町']; /* 街並みの店看板（交互に常時表示） */
   for (var n = 0; n < 4; n++) {
     var bx = 24 + n * 128;
     /* 屋根 */
@@ -1048,7 +1049,26 @@ function buildBg(){
     g.fillStyle = '#e45c10'; g.fillRect(bx + 65, 17, 10, 12);
     g.fillStyle = '#f8b800'; g.fillRect(bx + 68, 20, 4, 6);
     g.fillStyle = '#201008'; g.fillRect(bx + 66, 29, 8, 3);
+    /* 縦書きの店看板（生成り地＋朱文字） */
+    drawShopSign(g, bx - 22, 9, SIGN_TEXTS[n]);
   }
+}
+
+/* 街並みに立てる縦書き看板（「想夫恋」「宇美町」） */
+function drawShopSign(g, x, topY, text){
+  var cw = 14, ch = text.length * 12 + 5;
+  /* 支柱（地面まで） */
+  g.fillStyle = '#160a04'; g.fillRect(x + cw / 2 - 1, topY, 2, 64 - topY);
+  /* 板の縁（朱） */
+  g.fillStyle = '#9a2810'; g.fillRect(x - 1, topY - 1, cw + 2, ch + 2);
+  /* 板の地（生成り）＋ハイライト */
+  g.fillStyle = '#efe2c0'; g.fillRect(x, topY, cw, ch);
+  g.fillStyle = '#d9c79c'; g.fillRect(x, topY, cw, 1); g.fillRect(x, topY, 1, ch);
+  /* 文字（縦書き・朱） */
+  g.fillStyle = '#8a1e0c';
+  g.font = '700 11px "Noto Sans JP","Hiragino Kaku Gothic ProN",sans-serif';
+  g.textAlign = 'center'; g.textBaseline = 'middle';
+  for (var i = 0; i < text.length; i++) { g.fillText(text.charAt(i), x + cw / 2, topY + 9 + i * 12); }
 }
 
 /* ━━━ ゲーム定数 ━━━ */
@@ -1063,7 +1083,7 @@ var ITEM_TYPES = ['itMen','itPork','itMoyashi','itNira','itSauce'];
 var ITEM_NAMES = ['麺','豚肉','もやし','ニラ','ソース'];
 var ITEM_Y = [GY - 14, GY - 28, GY - 42];
 /* クーポン発行に必要なスコア（この点数以上で1日1枚発行） */
-var COUPON_MIN_SCORE = 50000;
+var COUPON_MIN_SCORE = 36000;
 
 /* ━━━ 難易度プレハブチャンク（tile=8px / minD=tile距離 / minV=速度下限） ━━━ */
 /* gap保証: 8タイル(64px)以下。単発ジャンプ飛距離=v*0.578なので
@@ -2142,7 +2162,7 @@ function couponTicketHtml(s){
         '<p class="cp-shop">想夫恋 宇美店</p>' +
         '<p class="cp-game">カリカリダッシュ ハイスコア特典</p>' +
         '<p class="cp-amount">お会計から<br>50円引き<small>（税込）</small></p>' +
-        '<p class="cp-all">50,000点達成おめでとう！</p>' +
+        '<p class="cp-all">36,000点達成おめでとう！</p>' +
         '<br><span class="cp-flame">🔥</span>' +
         '<p class="cp-flame-note">この炎が動いていれば本物です</p>' +
         '<p><span class="cp-badge ' + badgeCls + '">称号：' + escapeHtml(s.couponTitle || '見習い') + '</span></p>' +
@@ -2178,7 +2198,7 @@ function renderCoupon(overrideStore){
     body.innerHTML =
       '<div class="cp-state"><span class="cp-state-icon">' + icoHtml('pan', 'px-ico-lg') + '</span>' +
       '<p class="cp-state-title">まだ走っていません</p>' +
-      '<p class="cp-state-text">50,000点を達成すると<br>「お会計から50円引き」クーポンを発行します！</p></div>' +
+      '<p class="cp-state-text">36,000点を達成すると<br>「お会計から50円引き」クーポンを発行します！</p></div>' +
       '<button id="cpPlay" type="button" class="btn">' + icoHtml('flame') + ' いますぐ走る</button>' +
       '<button id="cpBack" type="button" class="btn btn-ghost">もどる</button>';
     $('cpPlay').addEventListener('click', function(){ closeCoupon(); startGame(false); });
@@ -2197,7 +2217,7 @@ function renderCoupon(overrideStore){
       '<div class="cp-used-full">' +
         '<span class="cp-used-mark">使用済み</span>' +
         (usedWhen ? '<p class="cp-used-when">使用日時：' + usedWhen + '</p>' : '') +
-        '<p class="cp-used-msg">ご来店ありがとうございました！<br>また明日、50,000点達成で発行できます。</p>' +
+        '<p class="cp-used-msg">ご来店ありがとうございました！<br>また明日、36,000点達成で発行できます。</p>' +
       '</div>' +
       '<button id="cpPlay" type="button" class="btn">▶ スコアアタックで遊ぶ</button>' +
       '<button id="cpBack" type="button" class="btn btn-ghost">もどる</button>';
@@ -2210,7 +2230,7 @@ function renderCoupon(overrideStore){
     body.innerHTML =
       '<div class="cp-state"><span class="cp-state-icon">' + icoHtml('hourglass', 'px-ico-lg') + '</span>' +
       '<p class="cp-state-title">有効期限が切れています</p>' +
-      '<p class="cp-state-text">もう1回挑戦！50,000点達成で<br>今日の分を新しく発行できます。</p></div>' +
+      '<p class="cp-state-text">もう1回挑戦！36,000点達成で<br>今日の分を新しく発行できます。</p></div>' +
       '<button id="cpPlay" type="button" class="btn">' + icoHtml('flame') + ' いますぐ走る</button>' +
       '<button id="cpBack" type="button" class="btn btn-ghost">もどる</button>';
     $('cpPlay').addEventListener('click', function(){ closeCoupon(); startGame(false); });

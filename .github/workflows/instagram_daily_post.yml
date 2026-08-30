@@ -1,0 +1,49 @@
+name: Instagram毎日10時30分投稿
+
+on:
+  schedule:
+    - cron: '30 10 * * *'
+      timezone: 'Asia/Tokyo'
+  workflow_dispatch:
+    inputs:
+      target_date:
+        description: '確認対象日（YYYY-MM-DD、空欄は日本時間の今日）'
+        required: false
+        type: string
+      dry_run:
+        description: '投稿せず内容だけ確認する'
+        required: true
+        default: true
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: instagram-daily-post
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: リポジトリをチェックアウト
+        uses: actions/checkout@v4
+
+      - name: Python 3.11 セットアップ
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 必要ライブラリをインストール
+        run: python -m pip install --disable-pip-version-check requests==2.32.5
+
+      - name: 当日の投稿を実行
+        env:
+          INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
+          INSTAGRAM_API_VERSION: v24.0
+          AUTO_PUBLISH_ENABLED: ${{ vars.INSTAGRAM_AUTO_PUBLISH_ENABLED || 'false' }}
+          TARGET_DATE: ${{ inputs.target_date }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
+        run: python scripts/instagram_publish.py

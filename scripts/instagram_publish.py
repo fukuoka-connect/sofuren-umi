@@ -15,6 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 QUEUE_PATH = ROOT / "sns-posts" / "queue.json"
 CONFIG_PATH = ROOT / "sns-posts" / "config.json"
 REQUEST_TIMEOUT = 30
+CAROUSEL_MAX = 10  # Instagramのカルーセル上限
 
 
 def load_json(path: Path) -> dict:
@@ -82,6 +83,59 @@ def recent_duplicate(base_url: str, user_id: str, caption: str, token: str) -> s
     return None
 
 
+def wait_until_finished(
+    base_url: str,
+    creation_id: str,
+    token: str,
+    label: str,
+    interval: int = 60,
+    tries: int = 5,
+) -> None:
+    """メディアコンテナが FINISHED になるまで待つ。"""
+    for attempt in range(tries):
+        status = api_request(
+            "GET",
+            f"{base_url}/{creation_id}",
+            token,
+            params={"fields": "status_code,status"},
+        )
+        status_code = status.get("status_code")
+        if status_code == "FINISHED":
+            return
+        if status_code in {"ERROR", "EXPIRED"}:
+            raise RuntimeError(f"{label}準備失敗: {status_code} {status.get('status', '')}")
+        if attempt < tries - 1:
+            time.sleep(interval)
+    raise RuntimeError(f"{label}準備が時間内に完了しませんでした")
+
+
+def build_carousel(base_url: str, user_id: str, token: str, image_urls: list[str], caption: str) -> str:
+    """複数枚をカルーセルの親コンテナにまとめ、その creation_id を返す。"""
+    child_ids = []
+    for index, image_url in enumerate(image_urls, start=1):
+        child = api_request(
+            "POST",
+            f"{base_url}/{user_id}/media",
+            token,
+            data={"image_url": image_url, "is_carousel_item": "true"},
+        )
+        # 子は通常すぐ整うので短い間隔で確認する（画像1枚あたり最大1分）
+        wait_until_finished(base_url, child["id"], token, f"{index}枚目", interval=5, tries=12)
+        child_ids.append(child["id"])
+
+    parent = api_request(
+        "POST",
+        f"{base_url}/{user_id}/media",
+        token,
+        data={
+            "media_type": "CAROUSEL",
+            "children": ",".join(child_ids),
+            "caption": caption,
+        },
+    )
+    return parent["id"]
+
+
 def main() -> int:
     queue = load_json(QUEUE_PATH)
     config = load_json(CONFIG_PATH)
@@ -96,9 +150,17 @@ def main() -> int:
         return 0
 
     caption = f"{post.get('caption', '').strip()}\n\n{post.get('hashtags', '').strip()}".strip()
-    image_url = post.get("imageUrl", "")
-    if not image_url.startswith("https://") or not caption:
-        raise RuntimeError("公開画像URLまたは本文が不正です")
+    # imageUrls（複数枚・カルーセル）を優先し、無ければ従来の imageUrl（1枚）を使う
+    image_urls = [url for url in (post.get("imageUrls") or []) if url]
+    if not image_urls:
+        single = post.get("imageUrl", "")
+        image_urls = [single] if single else []
+    if not image_urls or not all(url.startswith("https://") for url in image_urls):
+        raise RuntimeError("公開画像URLが不正です")
+    if len(image_urls) > CAROUSEL_MAX:
+        raise RuntimeError(f"カルーセルは最大{CAROUSEL_MAX}枚です（{len(image_urls)}枚指定されています）")
+    if not caption:
+        raise RuntimeError("本文が空です")
 
     dry_run = bool_env("DRY_RUN", True)
     enabled = bool_env("AUTO_PUBLISH_ENABLED", False)
@@ -108,7 +170,8 @@ def main() -> int:
             "date": target_date,
             "kind": post.get("kind"),
             "subject": post.get("subject"),
-            "imageUrl": image_url,
+            "imageCount": len(image_urls),
+            "imageUrls": image_urls,
             "captionLength": len(caption),
         }, ensure_ascii=False, indent=2))
         return 0
@@ -129,30 +192,18 @@ def main() -> int:
         print(f"{target_date}: 同じ本文の投稿を確認したため重複投稿を防止しました。{duplicate}")
         return 0
 
-    container = api_request(
-        "POST",
-        f"{base_url}/{user_id}/media",
-        access_token,
-        data={"image_url": image_url, "caption": caption},
-    )
-    creation_id = container["id"]
-
-    for attempt in range(5):
-        status = api_request(
-            "GET",
-            f"{base_url}/{creation_id}",
+    if len(image_urls) == 1:
+        container = api_request(
+            "POST",
+            f"{base_url}/{user_id}/media",
             access_token,
-            params={"fields": "status_code,status"},
+            data={"image_url": image_urls[0], "caption": caption},
         )
-        status_code = status.get("status_code")
-        if status_code == "FINISHED":
-            break
-        if status_code in {"ERROR", "EXPIRED"}:
-            raise RuntimeError(f"メディア準備失敗: {status_code} {status.get('status', '')}")
-        if attempt < 4:
-            time.sleep(60)
+        creation_id = container["id"]
     else:
-        raise RuntimeError("メディア準備が5分以内に完了しませんでした")
+        creation_id = build_carousel(base_url, user_id, access_token, image_urls, caption)
+
+    wait_until_finished(base_url, creation_id, access_token, "メディア")
 
     published = api_request(
         "POST",
@@ -167,7 +218,8 @@ def main() -> int:
         access_token,
         params={"fields": "permalink,timestamp"},
     )
-    print(f"{target_date}: Instagram投稿完了 {details.get('permalink', media_id)}")
+    kind_label = "カルーセル" if len(image_urls) > 1 else "1枚"
+    print(f"{target_date}: Instagram投稿完了（{kind_label}・{len(image_urls)}枚） {details.get('permalink', media_id)}")
     return 0
 
 

@@ -2,8 +2,9 @@ name: Instagram毎日10時30分投稿
 
 on:
   schedule:
-    - cron: '30 10 * * *'
-      timezone: 'Asia/Tokyo'
+    # GitHub Actions の cron は UTC 固定（timezone キーは効かない）。
+    # 01:30 UTC = 10:30 JST。
+    - cron: '30 1 * * *'
   workflow_dispatch:
     inputs:
       target_date:
